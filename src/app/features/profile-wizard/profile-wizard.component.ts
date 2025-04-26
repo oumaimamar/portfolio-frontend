@@ -52,6 +52,18 @@ export class ProfileWizardComponent  implements OnInit {
     'Other'
   ];
 
+  // Add to your component class
+  softSkillExamples = [
+    'Communication',
+    'Teamwork',
+    'Problem Solving',
+    'Leadership',
+    'Time Management',
+    'Adaptability',
+    'Creativity',
+    'Critical Thinking'
+  ];
+
   // Forms
   profileForm!: FormGroup;
   experienceForm!: FormGroup;
@@ -145,13 +157,13 @@ export class ProfileWizardComponent  implements OnInit {
       verified: [false]
     });
 
+    this.softSkillForm = this.fb.group({
+      name: ['', Validators.required]
+    });
+
     this.languageForm = this.fb.group({
       name: ['', Validators.required],
       proficiency: ['', Validators.required]
-    });
-
-    this.softSkillForm = this.fb.group({
-      name: ['', Validators.required]
     });
 
     this.projectForm = this.fb.group({
@@ -238,17 +250,18 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
+  loadSoftSkills(): void {
+    this.softSkillService.getAllSoftSkills(this.userId).subscribe({
+      next: (skills) => this.softSkills = skills,
+      error: (err) => console.error('Failed to load soft skills:', err)
+    });
+  }
+
 
   loadLanguages(): void {
     this.languageService.getLanguages(this.userId).subscribe({
       next: (languages) => this.languages = languages,
       error: (err) => console.error('Failed to load languages:', err)
-    });
-  }
-  loadSoftSkills(): void {
-    this.softSkillService.getAllSoftSkills(this.userId).subscribe({
-      next: (skills) => this.softSkills = skills,
-      error: (err) => console.error('Failed to load soft skills:', err)
     });
   }
   loadProjects(): void {
@@ -400,7 +413,6 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
-
   addTechSkill(): void {
     if (this.techSkillForm.valid) {
       const request: TechSkillRequest = this.techSkillForm.value;
@@ -428,6 +440,36 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
+  addSoftSkill(): void {
+    if (this.softSkillForm.valid) {
+      const request: SoftSkillRequest = { name: this.softSkillForm.value.name };
+
+      const snackbarRef = this.snackBar.open('Adding soft skill...', 'Close', {
+        duration: 0
+      });
+
+      this.softSkillService.createSoftSkill(this.userId, request).subscribe({
+        next: (newSkill) => {
+          snackbarRef.dismiss();
+          this.softSkills.push(newSkill);
+          this.softSkillForm.reset();
+          this.snackBar.open('Soft skill added successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        },
+        error: (err) => {
+          snackbarRef.dismiss();
+          console.error('Failed to add soft skill:', err);
+          this.snackBar.open(err.error?.message || 'Failed to add soft skill', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
+  }
+
 
   addLanguage(): void {
     if (this.languageForm.valid) {
@@ -437,18 +479,6 @@ export class ProfileWizardComponent  implements OnInit {
           this.languageForm.reset();
         },
         error: (err) => console.error('Failed to add language:', err)
-      });
-    }
-  }
-  addSoftSkill(): void {
-    if (this.softSkillForm.valid) {
-      const request: SoftSkillRequest = { name: this.softSkillForm.value.name };
-      this.softSkillService.createSoftSkill(this.userId, request).subscribe({
-        next: (newSkill) => {
-          this.softSkills.push(newSkill);
-          this.softSkillForm.reset();
-        },
-        error: (err) => console.error('Failed to add soft skill:', err)
       });
     }
   }
@@ -603,19 +633,44 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
+  deleteSoftSkill(id: number): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '450px',
+      data: {
+        title: 'Delete Soft Skill',
+        message: 'Are you sure you want to delete this soft skill?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.softSkillService.deleteSoftSkill(this.userId, id).subscribe({
+          next: () => {
+            this.softSkills = this.softSkills.filter(s => s.id !== id);
+            this.snackBar.open('Soft skill deleted successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (err) => {
+            console.error('Failed to delete soft skill:', err);
+            this.snackBar.open('Failed to delete soft skill', 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
+  }
+
   deleteLanguage(id: number): void {
     if (confirm('Are you sure you want to delete this language?')) {
       this.languageService.deleteLanguage(id).subscribe({
         next: () => this.languages = this.languages.filter(l => l.id !== id),
         error: (err) => console.error('Failed to delete language:', err)
-      });
-    }
-  }
-  deleteSoftSkill(id: number): void {
-    if (confirm('Are you sure you want to delete this soft skill?')) {
-      this.softSkillService.deleteSoftSkill(this.userId, id).subscribe({
-        next: () => this.softSkills = this.softSkills.filter(s => s.id !== id),
-        error: (err) => console.error('Failed to delete soft skill:', err)
       });
     }
   }

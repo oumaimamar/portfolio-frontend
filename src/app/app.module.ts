@@ -37,6 +37,9 @@ import {MatChip, MatChipListbox} from '@angular/material/chips';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './features/confirmation-dialog/confirmation-dialog.component';
+import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
+
 
 @NgModule({
   declarations: [
@@ -59,7 +62,6 @@ import { ConfirmationDialogComponent } from './features/confirmation-dialog/conf
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-
 
 
     CommonModule,
@@ -87,7 +89,11 @@ import { ConfirmationDialogComponent } from './features/confirmation-dialog/conf
     MatProgressBar,
     MatChipListbox,
     MatChip,
-    MatCheckbox
+    MatCheckbox,
+    MatAutocompleteTrigger,
+    MatAutocomplete,
+
+    MatChipsModule
 
 
   ],

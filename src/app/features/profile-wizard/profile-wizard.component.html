@@ -448,7 +448,56 @@
         </div>
       </div>
 
+      <!-- Step 6: Soft Skills -->
+      <!-- Step 6: Soft Skills -->
+      <div *ngIf="currentStep === 6" class="step-content">
+        <h3>Soft Skills</h3>
 
+        <div class="section-header">
+          <h4>Add New Soft Skill</h4>
+        </div>
+
+        <form [formGroup]="softSkillForm" class="soft-skill-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Skill Name</mat-label>
+              <input matInput formControlName="name" required [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let skill of softSkillExamples" [value]="skill">
+                  {{skill}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error *ngIf="softSkillForm.get('name')?.hasError('required')">
+                Skill name is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="button-row">
+            <button mat-raised-button color="primary" (click)="addSoftSkill()" [disabled]="!softSkillForm.valid">
+              <mat-icon>add</mat-icon>
+              Add Soft Skill
+            </button>
+          </div>
+        </form>
+
+        <!-- List of existing soft skills -->
+        <div class="section-header" *ngIf="softSkills.length > 0">
+          <h4>Your Soft Skills</h4>
+        </div>
+
+        <div class="skills-grid">
+          <mat-card *ngFor="let skill of softSkills" class="skill-card">
+            <mat-card-header>
+              <mat-card-title>{{skill.name}}</mat-card-title>
+              <span class="spacer"></span>
+              <button mat-icon-button (click)="deleteSoftSkill(skill.id)">
+                <mat-icon color="warn">delete</mat-icon>
+              </button>
+            </mat-card-header>
+          </mat-card>
+        </div>
+      </div>
     </mat-card-content>
 
     <mat-card-actions>
@@ -478,6 +527,18 @@
         Back
       </button>
 
+      <button *ngIf="currentStep === 6" mat-button (click)="prevStep()">
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
+
+      <button *ngIf="currentStep === 7" mat-button (click)="prevStep()">
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
+
+
+
 
 
       <span class="spacer"></span>
@@ -502,6 +563,10 @@
 
       <button *ngIf="currentStep === 5" mat-raised-button color="primary" (click)="nextStep()">
         Next:  Soft-kills
+      </button>
+
+      <button *ngIf="currentStep === 6" mat-raised-button color="primary" (click)="nextStep()">
+        Next:  Language
       </button>
 
 

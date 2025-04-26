@@ -24,11 +24,7 @@ export class SoftSkillService {
     );
   }
 
-  updateSoftSkill(
-    profileId: number,
-    softSkillId: number,
-    request: SoftSkillRequest
-  ): Observable<SoftSkillResponse> {
+  updateSoftSkill(profileId: number, softSkillId: number, request: SoftSkillRequest): Observable<SoftSkillResponse> {
     return this.http.put<SoftSkillResponse>(
       `${this.apiUrl}/${profileId}/soft-skills/${softSkillId}`,
       request

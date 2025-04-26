@@ -189,45 +189,6 @@
 
 
  // ----------------------- Tech-Skills-----------
-.skills-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.skill-card {
-  margin-bottom: 1rem;
-}
-
-.skill-card mat-card-header {
-  align-items: center;
-}
-
-.skill-level {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-@media (max-width: 600px) {
-  .skills-container {
-    grid-template-columns: 1fr;
-  }
-
-  .skill-card mat-card-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .skill-card mat-card-header button {
-    align-self: flex-end;
-    margin-top: -48px;
-  }
-} // ----------------------- End-Tech-Skills-----------
-
-
 /* Tech Skills Step */
 .step-content {
   padding: 1.5rem;
@@ -301,4 +262,57 @@
     flex-direction: column;
     gap: 0.5rem;
   }
+}  // ----------------------- End-Tech-Skills-----------
+
+
+// ----------------------- Soft-Skills-----------
+/* Soft Skills Specific Styles */
+.soft-skill-form {
+  margin-bottom: 1.5rem;
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .form-field {
+      flex: 1;
+    }
+  }
 }
+
+/* Skills Grid - Shared with Tech Skills */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.skill-card {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  mat-card-header {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    align-items: center;
+  }
+}
+
+/* Navigation Buttons */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+
+  button {
+    min-width: 120px;
+  }
+}  // ----------------------- End-Soft-Skills-----------
+
