@@ -30,6 +30,11 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {HttpClientModule} from '@angular/common/http';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { ProfileWizardComponent } from './features/profile-wizard/profile-wizard.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import { PortfolioComponent } from './features/portfolio/portfolio.component';
+import {MatChip, MatChipListbox} from '@angular/material/chips';
+import {MatCheckbox} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -42,12 +47,15 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
     ProfileComponent,
     ProjectsComponent,
     CertificationsComponent,
-    DashboardComponent
+    DashboardComponent,
+    ProfileWizardComponent,
+    PortfolioComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+
 
 
     CommonModule,
@@ -64,14 +72,17 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
     MatTableModule,
 
 
-
     HttpClientModule,
     BrowserAnimationsModule,
     MatTabsModule,
     MatDividerModule,
     MatListModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressBar,
+    MatChipListbox,
+    MatChip,
+    MatCheckbox
 
 
   ],

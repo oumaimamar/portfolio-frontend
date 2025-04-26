@@ -64,7 +64,7 @@ export class LoginComponent implements OnInit {
     switch (role) {
       case 'APPRENANT':
       case 'LAUREAT':
-        this.router.navigateByUrl("/profile");
+        this.router.navigateByUrl("/profile-wizard");
         break;
       case 'RESPONSABLE':
         this.router.navigate(['/dashboard']);

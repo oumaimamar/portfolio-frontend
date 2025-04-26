@@ -6,6 +6,10 @@ import {ProfileComponent} from './features/profile/profile.component';
 import {ProjectsComponent} from './features/projects/projects.component';
 import {CertificationsComponent} from './features/certifications/certifications.component';
 import {DashboardComponent} from './features/dashboard/dashboard.component';
+import {ProfileWizardComponent} from './features/profile-wizard/profile-wizard.component';
+import {PortfolioComponent} from './features/portfolio/portfolio.component';
+import {ProfileCompletionGuard} from './_helpers/profile-completion.guard';
+import {AuthGuard} from './_helpers/auth.guard';
 
 const routes: Routes = [
 
@@ -16,7 +20,24 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
 
   { path: 'certifications', component: CertificationsComponent },
-  { path: '', redirectTo: 'login', pathMatch: 'full' }
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+
+  { path: 'profile-wizard', component: ProfileWizardComponent },
+
+
+  // {
+  //   path: 'profile-wizard',
+  //   component: ProfileWizardComponent,
+  //   canActivate: [AuthGuard]
+  // },
+  // {
+  //   path: 'portfolio',
+  //   component: PortfolioComponent,
+  //   canActivate: [AuthGuard, ProfileCompletionGuard]
+  // },
+
+  { path: '', redirectTo: 'portfolio', pathMatch: 'full' }
 
 ];
 

@@ -1,0 +1,82 @@
+<div class="wizard-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Complete Your Profile</mat-card-title>
+      <mat-card-subtitle>Step 1 of 7 - {{calculateProgress() | number:'1.0-0'}}% complete</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-progress-bar mode="determinate" [value]="calculateProgress()"></mat-progress-bar>
+
+    <mat-card-content>
+      <!-- Step 1: Basic Profile -->
+      <div [formGroup]="profileForm" class="step-content">
+        <h3>Personal Information</h3>
+
+        <div class="profile-picture-upload">
+          <img [src]="previewUrl || profileForm.get('profilePicture')?.value || 'assets/default-avatar.png'"
+               alt="Profile Picture" class="profile-image">
+
+          <input type="file" #fileInput
+                 (change)="onFileSelected($event)"
+                 style="display: none;"
+                 accept="image/jpeg, image/png, image/gif">
+
+          <button mat-button (click)="fileInput.click()">
+            <mat-icon>photo_camera</mat-icon>
+            Upload Photo
+          </button>
+
+          <!-- Progress bar -->
+          <mat-progress-bar *ngIf="uploadProgress !== null"
+                            mode="determinate"
+                            [value]="uploadProgress">
+          </mat-progress-bar>
+
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="firstName" required>
+            <mat-error *ngIf="profileForm.get('firstName')?.hasError('required')">
+              First name is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="lastName" required>
+            <mat-error *ngIf="profileForm.get('lastName')?.hasError('required')">
+              Last name is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Phone Number</mat-label>
+          <input matInput formControlName="phoneNumber" type="tel">
+          <mat-icon matSuffix>phone</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Diploma/Degree</mat-label>
+          <input matInput formControlName="diploma">
+          <mat-icon matSuffix>school</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Bio</mat-label>
+          <textarea matInput formControlName="bio" rows="4" placeholder="Tell us about yourself..."></textarea>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <span class="spacer"></span>
+      <button mat-button (click)="skipWizard()">Skip for Now</button>
+      <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="!profileForm.valid">
+        Next: Work Experience
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
