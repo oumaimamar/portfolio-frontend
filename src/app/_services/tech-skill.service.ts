@@ -24,11 +24,8 @@ export class TechSkillService {
     );
   }
 
-  updateTechSkill(
-    profileId: number,
-    techSkillId: number,
-    request: TechSkillRequest
-  ): Observable<TechSkillResponse> {
+
+  updateTechSkill(profileId: number, techSkillId: number, request: TechSkillRequest): Observable<TechSkillResponse> {
     return this.http.put<TechSkillResponse>(
       `${this.apiUrl}/${profileId}/tech-skills/${techSkillId}`,
       request

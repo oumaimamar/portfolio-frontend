@@ -164,7 +164,6 @@
         </mat-card>
       </div>
 
-
       <!-- Step 3: Work Experience -->
       <div *ngIf="currentStep === 3" class="step-content">
         <h3>Work Experience</h3>
@@ -256,8 +255,6 @@
           </mat-card-content>
         </mat-card>
       </div>
-
-
 
       <!-- Step 4: Certifications -->
       <div *ngIf="currentStep === 4" class="step-content">
@@ -355,6 +352,100 @@
             </div>
           </mat-card-content>
         </mat-card>
+      </div>
+
+      <!-- Step 5: Technical Skills -->
+      <div *ngIf="currentStep === 5" class="step-content">
+        <h3>Technical Skills</h3>
+
+        <div class="section-header">
+          <h4>Add New Technical Skill</h4>
+        </div>
+
+        <form [formGroup]="techSkillForm">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Skill Name</mat-label>
+              <input matInput formControlName="name" required>
+              <mat-error *ngIf="techSkillForm.get('name')?.hasError('required')">
+                Skill name is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category" required>
+                <mat-option *ngFor="let category of skillCategories" [value]="category">
+                  {{category}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="techSkillForm.get('category')?.hasError('required')">
+                Category is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Skill Level</mat-label>
+              <mat-select formControlName="level" required>
+                <mat-option *ngFor="let level of skillLevels" [value]="level">
+                  {{level | titlecase}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="techSkillForm.get('level')?.hasError('required')">
+                Level is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Years of Experience</mat-label>
+              <input matInput type="number" formControlName="yearsOfExperience" min="0" max="50" required>
+              <mat-error *ngIf="techSkillForm.get('yearsOfExperience')?.hasError('required')">
+                Years of experience is required
+              </mat-error>
+              <mat-error *ngIf="techSkillForm.get('yearsOfExperience')?.hasError('min') ||
+                         techSkillForm.get('yearsOfExperience')?.hasError('max')">
+                Must be between 0 and 50 years
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-checkbox formControlName="verified">Verified Skill</mat-checkbox>
+
+          <div class="button-row">
+            <button mat-raised-button color="primary" (click)="addTechSkill()" [disabled]="!techSkillForm.valid">
+              <mat-icon>add</mat-icon>
+              Add Skill
+            </button>
+          </div>
+        </form>
+
+        <!-- List of existing technical skills -->
+        <div class="section-header" *ngIf="techSkills.length > 0">
+          <h4>Your Technical Skills</h4>
+        </div>
+
+        <div class="skills-grid">
+          <mat-card *ngFor="let skill of techSkills" class="skill-card">
+            <mat-card-header>
+              <mat-card-title>{{skill.name}}</mat-card-title>
+              <mat-card-subtitle>{{skill.category}}</mat-card-subtitle>
+              <span class="spacer"></span>
+              <mat-icon *ngIf="skill.verified" color="primary" matTooltip="Verified">verified</mat-icon>
+              <button mat-icon-button (click)="deleteTechSkill(skill.id)">
+                <mat-icon color="warn">delete</mat-icon>
+              </button>
+            </mat-card-header>
+
+            <mat-card-content>
+              <div class="skill-details">
+                <div><strong>Level:</strong> {{skill.level | titlecase}}</div>
+                <div><strong>Experience:</strong> {{skill.yearsOfExperience}} year(s)</div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
       </div>
 
 

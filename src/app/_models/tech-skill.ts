@@ -1,16 +1,24 @@
-// tech-skill-request.model.ts
-export interface TechSkillRequest {
-  name: string;
-  level?: number;  // Add other fields that match your TechSkillRequest DTO
-  category?: string;
+export enum SkillLevel {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  EXPERT = 'EXPERT'
 }
 
-// tech-skill-response.model.ts
+export interface TechSkillRequest {
+  name: string;
+  level: SkillLevel;
+  category: string;
+  yearsOfExperience: number;
+  verified: boolean;
+}
+
 export interface TechSkillResponse {
   id: number;
   name: string;
-  level?: number;
-  category?: string;
+  level: SkillLevel;
+  category: string;
+  yearsOfExperience: number;
+  verified: boolean;
   profileId: number;
-  // Add other fields that match your TechSkillResponse DTO
 }

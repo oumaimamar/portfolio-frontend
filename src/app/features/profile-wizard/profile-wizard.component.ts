@@ -5,7 +5,7 @@ import {Experience} from '../../_models/experience';
 import {Formation} from '../../_models/formation';
 import {Language} from '../../_models/language';
 import {SoftSkillRequest, SoftSkillResponse} from '../../_models/soft-skill';
-import {TechSkillRequest, TechSkillResponse} from '../../_models/tech-skill';
+import {SkillLevel, TechSkillRequest, TechSkillResponse} from '../../_models/tech-skill';
 import {CertificationRequest, CertificationResponse} from '../../_models/certification';
 import {ProjectRequest, ProjectResponse, ProjectStatus} from '../../_models/project';
 import {ProfileService} from '../../_services/profile.service';
@@ -38,6 +38,19 @@ export class ProfileWizardComponent  implements OnInit {
 // Add these to your component class
   previewUrl: string | ArrayBuffer | null = null;
   uploadProgress: number | null = null;
+
+// Add to component class
+  skillLevels = Object.values(SkillLevel);
+  skillCategories = [
+    'Programming',
+    'Database',
+    'DevOps',
+    'Cloud',
+    'Frontend',
+    'Backend',
+    'Mobile',
+    'Other'
+  ];
 
   // Forms
   profileForm!: FormGroup;
@@ -95,7 +108,6 @@ export class ProfileWizardComponent  implements OnInit {
       profilePicture: ['']
     });
 
-
     this.formationForm = this.fb.group({
       degree: ['', Validators.required],
       institution: ['', Validators.required],
@@ -125,6 +137,13 @@ export class ProfileWizardComponent  implements OnInit {
       credentialUrl: ['']
     });
 
+    this.techSkillForm = this.fb.group({
+      name: ['', Validators.required],
+      level: [SkillLevel.INTERMEDIATE, Validators.required],
+      category: ['', Validators.required],
+      yearsOfExperience: [0, [Validators.required, Validators.min(0), Validators.max(50)]],
+      verified: [false]
+    });
 
     this.languageForm = this.fb.group({
       name: ['', Validators.required],
@@ -134,13 +153,6 @@ export class ProfileWizardComponent  implements OnInit {
     this.softSkillForm = this.fb.group({
       name: ['', Validators.required]
     });
-
-    this.techSkillForm = this.fb.group({
-      name: ['', Validators.required],
-      level: [1, [Validators.min(1), Validators.max(10)]],
-      category: ['']
-    });
-
 
     this.projectForm = this.fb.group({
       title: ['', Validators.required],
@@ -213,6 +225,19 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
+  loadTechSkills(): void {
+    this.techSkillService.getAllTechSkills(this.userId).subscribe({
+      next: (skills) => this.techSkills = skills,
+      error: (err) => {
+        console.error('Failed to load tech skills:', err);
+        this.snackBar.open('Failed to load technical skills', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
 
   loadLanguages(): void {
     this.languageService.getLanguages(this.userId).subscribe({
@@ -224,12 +249,6 @@ export class ProfileWizardComponent  implements OnInit {
     this.softSkillService.getAllSoftSkills(this.userId).subscribe({
       next: (skills) => this.softSkills = skills,
       error: (err) => console.error('Failed to load soft skills:', err)
-    });
-  }
-  loadTechSkills(): void {
-    this.techSkillService.getAllTechSkills(this.userId).subscribe({
-      next: (skills) => this.techSkills = skills,
-      error: (err) => console.error('Failed to load tech skills:', err)
     });
   }
   loadProjects(): void {
@@ -382,6 +401,34 @@ export class ProfileWizardComponent  implements OnInit {
   }
 
 
+  addTechSkill(): void {
+    if (this.techSkillForm.valid) {
+      const request: TechSkillRequest = this.techSkillForm.value;
+      this.techSkillService.createTechSkill(this.userId, request).subscribe({
+        next: (newSkill) => {
+          this.techSkills.push(newSkill);
+          this.techSkillForm.reset({
+            level: SkillLevel.INTERMEDIATE,
+            yearsOfExperience: 0,
+            verified: false
+          });
+          this.snackBar.open('Technical skill added successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        },
+        error: (err) => {
+          console.error('Failed to add tech skill:', err);
+          this.snackBar.open(err.error?.message || 'Failed to add technical skill', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
+  }
+
+
   addLanguage(): void {
     if (this.languageForm.valid) {
       this.languageService.createLanguage(this.userId, this.languageForm.value).subscribe({
@@ -402,22 +449,6 @@ export class ProfileWizardComponent  implements OnInit {
           this.softSkillForm.reset();
         },
         error: (err) => console.error('Failed to add soft skill:', err)
-      });
-    }
-  }
-  addTechSkill(): void {
-    if (this.techSkillForm.valid) {
-      const request: TechSkillRequest = {
-        name: this.techSkillForm.value.name,
-        level: this.techSkillForm.value.level,
-        category: this.techSkillForm.value.category
-      };
-      this.techSkillService.createTechSkill(this.userId, request).subscribe({
-        next: (newSkill) => {
-          this.techSkills.push(newSkill);
-          this.techSkillForm.reset();
-        },
-        error: (err) => console.error('Failed to add tech skill:', err)
       });
     }
   }
@@ -540,6 +571,37 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
+  deleteTechSkill(id: number): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Technical Skill',
+        message: 'Are you sure you want to delete this technical skill?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.techSkillService.deleteTechSkill(this.userId, id).subscribe({
+          next: () => {
+            this.techSkills = this.techSkills.filter(s => s.id !== id);
+            this.snackBar.open('Technical skill deleted successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (err) => {
+            console.error('Failed to delete tech skill:', err);
+            this.snackBar.open('Failed to delete technical skill', 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
+  }
 
   deleteLanguage(id: number): void {
     if (confirm('Are you sure you want to delete this language?')) {
@@ -554,14 +616,6 @@ export class ProfileWizardComponent  implements OnInit {
       this.softSkillService.deleteSoftSkill(this.userId, id).subscribe({
         next: () => this.softSkills = this.softSkills.filter(s => s.id !== id),
         error: (err) => console.error('Failed to delete soft skill:', err)
-      });
-    }
-  }
-  deleteTechSkill(id: number): void {
-    if (confirm('Are you sure you want to delete this tech skill?')) {
-      this.techSkillService.deleteTechSkill(this.userId, id).subscribe({
-        next: () => this.techSkills = this.techSkills.filter(s => s.id !== id),
-        error: (err) => console.error('Failed to delete tech skill:', err)
       });
     }
   }
