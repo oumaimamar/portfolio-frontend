@@ -449,7 +449,6 @@
       </div>
 
       <!-- Step 6: Soft Skills -->
-      <!-- Step 6: Soft Skills -->
       <div *ngIf="currentStep === 6" class="step-content">
         <h3>Soft Skills</h3>
 
@@ -498,6 +497,106 @@
           </mat-card>
         </div>
       </div>
+
+      <!-- Step 7: Languages -->
+      <div *ngIf="currentStep === 7" class="step-content">
+        <h3>Languages</h3>
+
+        <div class="section-header">
+          <h4>Add New Language</h4>
+        </div>
+
+        <form [formGroup]="languageForm" class="language-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Language Name</mat-label>
+              <input matInput formControlName="name" required [matAutocomplete]="auto"/>
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let language of languageExamples" [value]="language">
+                  {{ language }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error *ngIf="languageForm.get('name')?.hasError('required')">
+                Language name is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Proficiency Level</mat-label>
+              <mat-select formControlName="proficiency" required>
+                <mat-option *ngFor="let level of proficiencyLevels" [value]="level">
+                  {{level | titlecase}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="languageForm.get('proficiency')?.hasError('required')">
+                Proficiency level is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Certification (Optional)</mat-label>
+              <mat-select formControlName="certification">
+                <mat-option *ngFor="let cert of certificationTypes" [value]="cert">
+                  {{cert}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field" *ngIf="languageForm.get('certification')?.value">
+              <mat-label>Certificate URL</mat-label>
+              <input matInput formControlName="certificateUrl" type="url">
+              <mat-icon matSuffix>link</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <mat-checkbox formControlName="nativeLanguage">Native Language</mat-checkbox>
+
+          <div class="button-row">
+            <button mat-raised-button color="primary" (click)="addLanguage()" [disabled]="!languageForm.valid">
+              <mat-icon>add</mat-icon>
+              Add Language
+            </button>
+          </div>
+        </form>
+
+        <!-- List of existing languages -->
+        <div class="section-header" *ngIf="languages.length > 0">
+          <h4>Your Languages</h4>
+        </div>
+
+        <div class="languages-grid">
+          <mat-card *ngFor="let language of languages" class="language-card">
+            <mat-card-header>
+              <mat-card-title>{{language.name}}</mat-card-title>
+              <mat-card-subtitle>
+                {{language.proficiency | titlecase}}
+                <span *ngIf="language.nativeLanguage"> (Native)</span>
+              </mat-card-subtitle>
+              <span class="spacer"></span>
+              <button mat-icon-button (click)="deleteLanguage(language.id)">
+                <mat-icon color="warn">delete</mat-icon>
+              </button>
+            </mat-card-header>
+
+            <mat-card-content *ngIf="language.certification || language.certificateUrl">
+              <div class="language-details">
+                <div *ngIf="language.certification">
+                  <strong>Certification:</strong> {{language.certification}}
+                </div>
+                <div *ngIf="language.certificateUrl">
+                  <a [href]="language.certificateUrl" target="_blank" rel="noopener noreferrer">
+                    <mat-icon>link</mat-icon> View Certificate
+                  </a>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+
+
     </mat-card-content>
 
     <mat-card-actions>

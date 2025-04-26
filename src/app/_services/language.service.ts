@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {Language} from '../_models/language';
+import {LanguageRequest, LanguageResponse} from '../_models/language';
 
 @Injectable({
   providedIn: 'root'
@@ -11,35 +11,35 @@ export class LanguageService {
 
   constructor(private http: HttpClient) { }
 
-  createLanguage(profileId: number, language: Language): Observable<Language> {
-    return this.http.post<Language>(
+  createLanguage(profileId: number, request: LanguageRequest): Observable<LanguageResponse> {
+    return this.http.post<LanguageResponse>(
       `${this.apiUrl}/${profileId}/languages`,
-      language
+      request
     );
   }
 
-  getLanguages(profileId: number): Observable<Language[]> {
-    return this.http.get<Language[]>(
+  getLanguages(profileId: number): Observable<LanguageResponse[]> {
+    return this.http.get<LanguageResponse[]>(
       `${this.apiUrl}/${profileId}/languages`
     );
   }
 
-  getLanguageById(languageId: number): Observable<Language> {
-    return this.http.get<Language>(
-      `${this.apiUrl}/languages/${languageId}`
+  getLanguageById(profileId: number, languageId: number): Observable<LanguageResponse> {
+    return this.http.get<LanguageResponse>(
+      `${this.apiUrl}/${profileId}/languages/${languageId}`
     );
   }
 
-  updateLanguage(languageId: number, language: Language): Observable<Language> {
-    return this.http.put<Language>(
-      `${this.apiUrl}/languages/${languageId}`,
-      language
+  updateLanguage(profileId: number, languageId: number, request: LanguageRequest): Observable<LanguageResponse> {
+    return this.http.put<LanguageResponse>(
+      `${this.apiUrl}/${profileId}/languages/${languageId}`,
+      request
     );
   }
 
-  deleteLanguage(languageId: number): Observable<void> {
+  deleteLanguage(profileId: number, languageId: number): Observable<void> {
     return this.http.delete<void>(
-      `${this.apiUrl}/languages/${languageId}`
+      `${this.apiUrl}/${profileId}/languages/${languageId}`
     );
   }
 }

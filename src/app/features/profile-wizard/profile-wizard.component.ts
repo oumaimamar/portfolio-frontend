@@ -3,7 +3,6 @@ import {TokenService} from '../../_services/token.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Experience} from '../../_models/experience';
 import {Formation} from '../../_models/formation';
-import {Language} from '../../_models/language';
 import {SoftSkillRequest, SoftSkillResponse} from '../../_models/soft-skill';
 import {SkillLevel, TechSkillRequest, TechSkillResponse} from '../../_models/tech-skill';
 import {CertificationRequest, CertificationResponse} from '../../_models/certification';
@@ -23,6 +22,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {debounceTime, distinctUntilChanged, filter} from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
+import {CertificationType, LanguageRequest, LanguageResponse, ProficiencyLevel} from '../../_models/language';
 
 @Component({
   selector: 'app-profile-wizard',
@@ -39,8 +39,14 @@ export class ProfileWizardComponent  implements OnInit {
   previewUrl: string | ArrayBuffer | null = null;
   uploadProgress: number | null = null;
 
-// Add to component class
+// Add to component class --SELECTED
   skillLevels = Object.values(SkillLevel);
+  proficiencyLevels = Object.values(ProficiencyLevel);
+  certificationTypes = Object.values(CertificationType);
+
+
+
+  // Add to your component class --Suggestion
   skillCategories = [
     'Programming',
     'Database',
@@ -51,8 +57,6 @@ export class ProfileWizardComponent  implements OnInit {
     'Mobile',
     'Other'
   ];
-
-  // Add to your component class
   softSkillExamples = [
     'Communication',
     'Teamwork',
@@ -63,6 +67,30 @@ export class ProfileWizardComponent  implements OnInit {
     'Creativity',
     'Critical Thinking'
   ];
+  languageExamples = [
+    'Arabe',
+    'Français',
+    'Anglais',
+    'Espagnol',
+    'Allemand',
+    'Italien',
+    'Chinois',
+    'Japonais',
+    'Portugais',
+    'Russe',
+    'Néerlandais',
+    'Turc',
+    'Coréen',
+    'Hindi',
+    'Bengali',
+    'Suédois',
+    'Polonais',
+    'Vietnamien',
+    'Grec',
+    'Thaïlandais'
+  ];
+
+
 
   // Forms
   profileForm!: FormGroup;
@@ -77,7 +105,7 @@ export class ProfileWizardComponent  implements OnInit {
   // Data lists
   experiences: Experience[] = [];
   formations: Formation[] = [];
-  languages: Language[] = [];
+  languages: LanguageResponse[] = [];
   softSkills: SoftSkillResponse[] = [];
   techSkills: TechSkillResponse[] = [];
   certifications: CertificationResponse[] = [];
@@ -163,7 +191,10 @@ export class ProfileWizardComponent  implements OnInit {
 
     this.languageForm = this.fb.group({
       name: ['', Validators.required],
-      proficiency: ['', Validators.required]
+      proficiency: [ProficiencyLevel.INTERMEDIATE, Validators.required],
+      certification: [''],
+      certificateUrl: [''],
+      nativeLanguage: [false]
     });
 
     this.projectForm = this.fb.group({
@@ -257,13 +288,13 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
-
   loadLanguages(): void {
     this.languageService.getLanguages(this.userId).subscribe({
       next: (languages) => this.languages = languages,
       error: (err) => console.error('Failed to load languages:', err)
     });
   }
+
   loadProjects(): void {
     this.projectService.getAllProjects(this.userId).subscribe({
       next: (projects) => this.projects = projects,
@@ -470,18 +501,39 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
-
   addLanguage(): void {
     if (this.languageForm.valid) {
-      this.languageService.createLanguage(this.userId, this.languageForm.value).subscribe({
+      const request: LanguageRequest = this.languageForm.value;
+
+      const snackbarRef = this.snackBar.open('Adding language...', 'Close', {
+        duration: 0
+      });
+
+      this.languageService.createLanguage(this.userId, request).subscribe({
         next: (newLanguage) => {
+          snackbarRef.dismiss();
           this.languages.push(newLanguage);
-          this.languageForm.reset();
+          this.languageForm.reset({
+            proficiency: ProficiencyLevel.INTERMEDIATE,
+            nativeLanguage: false
+          });
+          this.snackBar.open('Language added successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
         },
-        error: (err) => console.error('Failed to add language:', err)
+        error: (err) => {
+          snackbarRef.dismiss();
+          console.error('Failed to add language:', err);
+          this.snackBar.open(err.error?.message || 'Failed to add language', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
       });
     }
   }
+
   addProject(): void {
     if (this.projectForm.valid) {
       const request: ProjectRequest = this.projectForm.value;
@@ -667,13 +719,39 @@ export class ProfileWizardComponent  implements OnInit {
   }
 
   deleteLanguage(id: number): void {
-    if (confirm('Are you sure you want to delete this language?')) {
-      this.languageService.deleteLanguage(id).subscribe({
-        next: () => this.languages = this.languages.filter(l => l.id !== id),
-        error: (err) => console.error('Failed to delete language:', err)
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '450px',
+      data: {
+        title: 'Delete Language',
+        message: 'Are you sure you want to delete this language?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.languageService.deleteLanguage(this.userId, id).subscribe({
+          next: () => {
+            this.languages = this.languages.filter(l => l.id !== id);
+            this.snackBar.open('Language deleted successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (err) => {
+            console.error('Failed to delete language:', err);
+            this.snackBar.open('Failed to delete language', 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
   }
+
+
   deleteProject(id: number): void {
     if (confirm('Are you sure you want to delete this project?')) {
       this.projectService.deleteProject(id).subscribe({
