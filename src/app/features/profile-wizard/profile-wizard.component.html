@@ -257,6 +257,107 @@
         </mat-card>
       </div>
 
+
+
+      <!-- Step 4: Certifications -->
+      <div *ngIf="currentStep === 4" class="step-content">
+        <h3>Certifications</h3>
+
+        <div class="section-header">
+          <h4>Add New Certification</h4>
+        </div>
+
+        <form [formGroup]="certificationForm">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Certification Name*</mat-label>
+              <input matInput formControlName="name" required>
+              <mat-error *ngIf="certificationForm.get('name')?.hasError('required')">
+                Certification name is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Issuing Organization*</mat-label>
+              <input matInput formControlName="issuingOrganization" required>
+              <mat-error *ngIf="certificationForm.get('issuingOrganization')?.hasError('required')">
+                Organization is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Issue Date</mat-label>
+              <input matInput formControlName="issueDate" type="date">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Expiration Date</mat-label>
+              <input matInput formControlName="expirationDate" type="date">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Credential ID</mat-label>
+              <input matInput formControlName="credentialId">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Credential URL</mat-label>
+              <input matInput formControlName="credentialUrl" type="url">
+              <mat-hint>Include full URL (https://)</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="button-row">
+            <button mat-raised-button color="primary" (click)="addCertification()" [disabled]="!certificationForm.valid">
+              <mat-icon>add</mat-icon>
+              Add Certification
+            </button>
+          </div>
+        </form>
+
+        <!-- List of existing certifications -->
+        <div class="section-header" *ngIf="certifications.length > 0">
+          <h4>Your Certifications</h4>
+        </div>
+
+        <mat-card *ngFor="let cert of certifications" class="certification-card">
+          <mat-card-header>
+            <mat-card-title>{{cert.name}}</mat-card-title>
+            <mat-card-subtitle>{{cert.issuingOrganization}}</mat-card-subtitle>
+            <span class="spacer"></span>
+            <button mat-icon-button (click)="deleteCertification(cert.id)">
+              <mat-icon color="warn">delete</mat-icon>
+            </button>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="certification-details">
+              <div *ngIf="cert.issueDate">
+                <strong>Issued:</strong> {{cert.issueDate | date:'mediumDate'}}
+              </div>
+              <div *ngIf="cert.expirationDate">
+                <strong>Expires:</strong> {{cert.expirationDate | date:'mediumDate'}}
+              </div>
+              <div *ngIf="cert.credentialId">
+                <strong>Credential ID:</strong> {{cert.credentialId}}
+              </div>
+              <div *ngIf="cert.credentialUrl">
+                <strong>Verify:</strong>
+                <a href="{{cert.credentialUrl}}" target="_blank" rel="noopener noreferrer">
+                  View Credential
+                  <mat-icon class="link-icon">open_in_new</mat-icon>
+                </a>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+
     </mat-card-content>
 
     <mat-card-actions>
@@ -281,6 +382,12 @@
         Back
       </button>
 
+      <button *ngIf="currentStep === 5" mat-button (click)="prevStep()">
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
+
+
 
       <span class="spacer"></span>
 
@@ -295,7 +402,15 @@
       </button>
 
       <button *ngIf="currentStep === 3" mat-raised-button color="primary" (click)="nextStep()">
-        Next: Work Certification
+        Next:  Certification
+      </button>
+
+      <button *ngIf="currentStep === 4" mat-raised-button color="primary" (click)="nextStep()">
+        Next:  Tech-kills
+      </button>
+
+      <button *ngIf="currentStep === 5" mat-raised-button color="primary" (click)="nextStep()">
+        Next:  Soft-kills
       </button>
 
 

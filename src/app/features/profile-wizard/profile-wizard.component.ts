@@ -95,15 +95,6 @@ export class ProfileWizardComponent  implements OnInit {
       profilePicture: ['']
     });
 
-    this.experienceForm = this.fb.group({
-      title: ['', Validators.required],
-      company: ['', Validators.required],
-      location: [''],
-      description: [''],
-      startDate: ['', Validators.required],
-      endDate: [''],
-      current: [false]
-    });
 
     this.formationForm = this.fb.group({
       degree: ['', Validators.required],
@@ -114,6 +105,26 @@ export class ProfileWizardComponent  implements OnInit {
       current: [false],
       description: ['']
     });
+
+    this.experienceForm = this.fb.group({
+      title: ['', Validators.required],
+      company: ['', Validators.required],
+      location: [''],
+      description: [''],
+      startDate: ['', Validators.required],
+      endDate: [''],
+      current: [false]
+    });
+
+    this.certificationForm = this.fb.group({
+      name: ['', Validators.required],
+      issuingOrganization: ['', Validators.required],
+      issueDate: [''],
+      expirationDate: [''],
+      credentialId: [''],
+      credentialUrl: ['']
+    });
+
 
     this.languageForm = this.fb.group({
       name: ['', Validators.required],
@@ -130,14 +141,6 @@ export class ProfileWizardComponent  implements OnInit {
       category: ['']
     });
 
-    this.certificationForm = this.fb.group({
-      name: ['', Validators.required],
-      issuingOrganization: ['', Validators.required],
-      issueDate: [''],
-      expirationDate: [''],
-      credentialId: [''],
-      credentialUrl: ['']
-    });
 
     this.projectForm = this.fb.group({
       title: ['', Validators.required],
@@ -168,6 +171,22 @@ export class ProfileWizardComponent  implements OnInit {
   }
 
 
+
+  loadFormations(): void {
+    this.formationService.getFormations(this.userId).subscribe({
+      next: (formations) => {
+        this.formations = formations;
+      },
+      error: (err) => {
+        console.error('Failed to load formations:', err);
+        this.snackBar.open('Failed to load formations', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
   loadExperiences(): void {
     this.experienceService.getExperiences(this.userId).subscribe({
       next: (experiences: Experience[]) => {
@@ -187,42 +206,6 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
-  loadFormations(): void {
-    this.formationService.getFormations(this.userId).subscribe({
-      next: (formations) => {
-        this.formations = formations;
-      },
-      error: (err) => {
-        console.error('Failed to load formations:', err);
-        this.snackBar.open('Failed to load formations', 'Close', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-  }
-
-  loadLanguages(): void {
-    this.languageService.getLanguages(this.userId).subscribe({
-      next: (languages) => this.languages = languages,
-      error: (err) => console.error('Failed to load languages:', err)
-    });
-  }
-
-  loadSoftSkills(): void {
-    this.softSkillService.getAllSoftSkills(this.userId).subscribe({
-      next: (skills) => this.softSkills = skills,
-      error: (err) => console.error('Failed to load soft skills:', err)
-    });
-  }
-
-  loadTechSkills(): void {
-    this.techSkillService.getAllTechSkills(this.userId).subscribe({
-      next: (skills) => this.techSkills = skills,
-      error: (err) => console.error('Failed to load tech skills:', err)
-    });
-  }
-
   loadCertifications(): void {
     this.certificationService.getAllCertifications(this.userId).subscribe({
       next: (certs) => this.certifications = certs,
@@ -230,6 +213,25 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
+
+  loadLanguages(): void {
+    this.languageService.getLanguages(this.userId).subscribe({
+      next: (languages) => this.languages = languages,
+      error: (err) => console.error('Failed to load languages:', err)
+    });
+  }
+  loadSoftSkills(): void {
+    this.softSkillService.getAllSoftSkills(this.userId).subscribe({
+      next: (skills) => this.softSkills = skills,
+      error: (err) => console.error('Failed to load soft skills:', err)
+    });
+  }
+  loadTechSkills(): void {
+    this.techSkillService.getAllTechSkills(this.userId).subscribe({
+      next: (skills) => this.techSkills = skills,
+      error: (err) => console.error('Failed to load tech skills:', err)
+    });
+  }
   loadProjects(): void {
     this.projectService.getAllProjects(this.userId).subscribe({
       next: (projects) => this.projects = projects,
@@ -237,6 +239,9 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
+
+
+  // -----------------Upload Image + Save Profile
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
@@ -295,8 +300,6 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
-
-
   saveProfile(): void {
     if (this.profileForm.valid) {
       const profileData: ProfileUpdateRequest = {
@@ -337,7 +340,7 @@ export class ProfileWizardComponent  implements OnInit {
       this.saveProfile();
     });
   }
-
+//-----------------------------------------
 
 
 
@@ -365,6 +368,20 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
+  addCertification(): void {
+    if (this.certificationForm.valid) {
+      const request: CertificationRequest = this.certificationForm.value;
+      this.certificationService.createCertification(this.userId, request).subscribe({
+        next: (newCert) => {
+          this.certifications.push(newCert);
+          this.certificationForm.reset();
+        },
+        error: (err) => console.error('Failed to add certification:', err)
+      });
+    }
+  }
+
+
   addLanguage(): void {
     if (this.languageForm.valid) {
       this.languageService.createLanguage(this.userId, this.languageForm.value).subscribe({
@@ -376,7 +393,6 @@ export class ProfileWizardComponent  implements OnInit {
       });
     }
   }
-
   addSoftSkill(): void {
     if (this.softSkillForm.valid) {
       const request: SoftSkillRequest = { name: this.softSkillForm.value.name };
@@ -389,7 +405,6 @@ export class ProfileWizardComponent  implements OnInit {
       });
     }
   }
-
   addTechSkill(): void {
     if (this.techSkillForm.valid) {
       const request: TechSkillRequest = {
@@ -406,20 +421,6 @@ export class ProfileWizardComponent  implements OnInit {
       });
     }
   }
-
-  addCertification(): void {
-    if (this.certificationForm.valid) {
-      const request: CertificationRequest = this.certificationForm.value;
-      this.certificationService.createCertification(this.userId, request).subscribe({
-        next: (newCert) => {
-          this.certifications.push(newCert);
-          this.certificationForm.reset();
-        },
-        error: (err) => console.error('Failed to add certification:', err)
-      });
-    }
-  }
-
   addProject(): void {
     if (this.projectForm.valid) {
       const request: ProjectRequest = this.projectForm.value;
@@ -431,6 +432,42 @@ export class ProfileWizardComponent  implements OnInit {
         error: (err) => console.error('Failed to add project:', err)
       });
     }
+  }
+
+
+  deleteFormation(formationId: number): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '450px',
+      panelClass: 'custom-dialog-container',
+      data: {
+        title: 'Delete Formation',
+        message: 'This will permanently remove the formation record. This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Keep It',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.formationService.deleteFormation(this.userId, formationId).subscribe({
+          next: () => {
+            this.formations = this.formations.filter(f => f.id !== formationId);
+            this.snackBar.open('Formation deleted successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (err) => {
+            console.error('Failed to delete formation:', err);
+            this.snackBar.open('Failed to delete formation', 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
   }
 
   deleteExperience(experienceId: number): void {
@@ -468,13 +505,13 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
-  deleteFormation(formationId: number): void {
+  deleteCertification(id: number): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '450px',
       panelClass: 'custom-dialog-container',
       data: {
-        title: 'Delete Formation',
-        message: 'This will permanently remove the formation record. This action cannot be undone.',
+        title: 'Delete Certification',
+        message: 'This will permanently remove this certification. This action cannot be undone.',
         confirmText: 'Delete',
         cancelText: 'Keep It',
         confirmColor: 'warn'
@@ -483,17 +520,17 @@ export class ProfileWizardComponent  implements OnInit {
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.formationService.deleteFormation(this.userId, formationId).subscribe({
+        this.certificationService.deleteCertification(id).subscribe({
           next: () => {
-            this.formations = this.formations.filter(f => f.id !== formationId);
-            this.snackBar.open('Formation deleted successfully', 'Close', {
+            this.certifications = this.certifications.filter(c => c.id !== id);
+            this.snackBar.open('Certification deleted successfully', 'Close', {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
           },
           error: (err) => {
-            console.error('Failed to delete formation:', err);
-            this.snackBar.open('Failed to delete formation', 'Close', {
+            console.error('Failed to delete certification:', err);
+            this.snackBar.open('Failed to delete certification', 'Close', {
               duration: 5000,
               panelClass: ['error-snackbar']
             });
@@ -503,6 +540,7 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
+
   deleteLanguage(id: number): void {
     if (confirm('Are you sure you want to delete this language?')) {
       this.languageService.deleteLanguage(id).subscribe({
@@ -511,7 +549,6 @@ export class ProfileWizardComponent  implements OnInit {
       });
     }
   }
-
   deleteSoftSkill(id: number): void {
     if (confirm('Are you sure you want to delete this soft skill?')) {
       this.softSkillService.deleteSoftSkill(this.userId, id).subscribe({
@@ -520,7 +557,6 @@ export class ProfileWizardComponent  implements OnInit {
       });
     }
   }
-
   deleteTechSkill(id: number): void {
     if (confirm('Are you sure you want to delete this tech skill?')) {
       this.techSkillService.deleteTechSkill(this.userId, id).subscribe({
@@ -529,16 +565,6 @@ export class ProfileWizardComponent  implements OnInit {
       });
     }
   }
-
-  deleteCertification(id: number): void {
-    if (confirm('Are you sure you want to delete this certification?')) {
-      this.certificationService.deleteCertification(id).subscribe({
-        next: () => this.certifications = this.certifications.filter(c => c.id !== id),
-        error: (err) => console.error('Failed to delete certification:', err)
-      });
-    }
-  }
-
   deleteProject(id: number): void {
     if (confirm('Are you sure you want to delete this project?')) {
       this.projectService.deleteProject(id).subscribe({
@@ -548,18 +574,18 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
+
+
   nextStep(): void {
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
     }
   }
-
   prevStep(): void {
     if (this.currentStep > 1) {
       this.currentStep--;
     }
   }
-
   skipWizard(): void {
     this.router.navigate(['/portfolio']);
   }

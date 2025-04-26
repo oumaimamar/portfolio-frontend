@@ -108,3 +108,86 @@
   background-color: #ff9800;
   color: white;
 }
+
+
+
+
+// ----------------------- Experiences-----------
+
+.experience-card {
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #3f51b5;
+
+  mat-card-header {
+    align-items: flex-start;
+
+    mat-card-title {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    mat-card-subtitle {
+      margin-top: 0.25rem;
+      color: #555;
+    }
+  }
+
+  mat-card-content {
+    p {
+      margin: 0.5rem 0;
+      line-height: 1.5;
+    }
+
+    strong {
+      color: #333;
+    }
+  }
+}// ----------------------- End-Experiences-----------
+
+
+
+// ----------------------- Certification-----------
+.certification-card {
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #4caf50;
+
+  mat-card-header {
+    align-items: flex-start;
+
+    mat-card-title {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    mat-card-subtitle {
+      margin-top: 0.25rem;
+      color: #555;
+    }
+  }
+
+  .certification-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+
+    div {
+      margin-bottom: 0.5rem;
+    }
+
+    strong {
+      color: #333;
+    }
+
+    a {
+      color: #3f51b5;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+// -----------------------End-Certification-----------
+
+
