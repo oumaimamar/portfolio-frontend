@@ -37,9 +37,11 @@ export class ExperienceService {
     );
   }
 
-  deleteExperience(experienceId: number): Observable<void> {
+
+  deleteExperience(profileId: number, experienceId: number): Observable<void> {
     return this.http.delete<void>(
-      `${this.apiUrl}/experiences/${experienceId}`
+      `${this.apiUrl}/${profileId}/experiences/${experienceId}`
     );
   }
+
 }

@@ -35,6 +35,8 @@ import {MatProgressBar} from '@angular/material/progress-bar';
 import { PortfolioComponent } from './features/portfolio/portfolio.component';
 import {MatChip, MatChipListbox} from '@angular/material/chips';
 import {MatCheckbox} from '@angular/material/checkbox';
+import {MatDialogModule} from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from './features/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +51,9 @@ import {MatCheckbox} from '@angular/material/checkbox';
     CertificationsComponent,
     DashboardComponent,
     ProfileWizardComponent,
-    PortfolioComponent
+    PortfolioComponent,
+    ConfirmationDialogComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -71,6 +75,7 @@ import {MatCheckbox} from '@angular/material/checkbox';
     MatMenuModule,
     MatTableModule,
 
+    MatDialogModule,
 
     HttpClientModule,
     BrowserAnimationsModule,

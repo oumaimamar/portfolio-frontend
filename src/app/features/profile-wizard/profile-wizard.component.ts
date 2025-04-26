@@ -19,6 +19,10 @@ import {ProjectService} from '../../_services/project.service';
 import { Router } from '@angular/router';
 import {ProfileUpdateRequest} from '../../_models/profile';
 import { HttpEventType } from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {debounceTime, distinctUntilChanged, filter} from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-profile-wizard',
@@ -68,7 +72,9 @@ export class ProfileWizardComponent  implements OnInit {
     private certificationService: CertificationService,
     private projectService: ProjectService,
     private tokenService: TokenService,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {
     this.userId = this.tokenService.getUser().id;
   }
@@ -76,6 +82,7 @@ export class ProfileWizardComponent  implements OnInit {
   ngOnInit(): void {
     this.initForms();
     this.loadExistingData();
+    this.setupAutoSave();
   }
 
   initForms(): void {
@@ -160,17 +167,38 @@ export class ProfileWizardComponent  implements OnInit {
     this.loadProjects();
   }
 
+
   loadExperiences(): void {
     this.experienceService.getExperiences(this.userId).subscribe({
-      next: (experiences) => this.experiences = experiences,
-      error: (err) => console.error('Failed to load experiences:', err)
+      next: (experiences: Experience[]) => {
+        this.experiences = experiences.map(e => ({
+          ...e,
+          startDate: new Date(e.startDate),
+          endDate: e.current ? undefined : (e.endDate ? new Date(e.endDate) : undefined)
+        }));
+      },
+      error: (err) => {
+        console.error('Failed to load experiences:', err);
+        this.snackBar.open('Failed to load work experiences', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
     });
   }
 
   loadFormations(): void {
     this.formationService.getFormations(this.userId).subscribe({
-      next: (formations) => this.formations = formations,
-      error: (err) => console.error('Failed to load formations:', err)
+      next: (formations) => {
+        this.formations = formations;
+      },
+      error: (err) => {
+        console.error('Failed to load formations:', err);
+        this.snackBar.open('Failed to load formations', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
     });
   }
 
@@ -267,17 +295,51 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
-  addExperience(): void {
-    if (this.experienceForm.valid) {
-      this.experienceService.createExperience(this.userId, this.experienceForm.value).subscribe({
-        next: (newExperience) => {
-          this.experiences.push(newExperience);
-          this.experienceForm.reset();
+
+
+  saveProfile(): void {
+    if (this.profileForm.valid) {
+      const profileData: ProfileUpdateRequest = {
+        ...this.profileForm.value,
+        socialLinks: []
+      };
+
+      this.profileService.updateProfile(this.userId, profileData).subscribe({
+        next: () => {
+          this.snackBar.open('Profile saved successfully!', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
         },
-        error: (err) => console.error('Failed to add experience:', err)
+        error: (err) => {
+          console.error('Failed to save profile:', err);
+          this.snackBar.open('Error saving profile. Please try again.', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    } else {
+      this.profileForm.markAllAsTouched();
+      this.snackBar.open('Please fill in all required fields correctly.', 'Close', {
+        duration: 5000,
+        panelClass: ['warning-snackbar']
       });
     }
   }
+
+  private setupAutoSave(): void {
+    this.profileForm.valueChanges.pipe(
+      debounceTime(120000),
+      distinctUntilChanged(),
+      filter(() => this.profileForm.valid)
+    ).subscribe(() => {
+      this.saveProfile();
+    });
+  }
+
+
+
 
   addFormation(): void {
     if (this.formationForm.valid) {
@@ -287,6 +349,18 @@ export class ProfileWizardComponent  implements OnInit {
           this.formationForm.reset();
         },
         error: (err) => console.error('Failed to add formation:', err)
+      });
+    }
+  }
+
+  addExperience(): void {
+    if (this.experienceForm.valid) {
+      this.experienceService.createExperience(this.userId, this.experienceForm.value).subscribe({
+        next: (newExperience) => {
+          this.experiences.push(newExperience);
+          this.experienceForm.reset();
+        },
+        error: (err) => console.error('Failed to add experience:', err)
       });
     }
   }
@@ -359,22 +433,74 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
-  deleteExperience(id: number): void {
-    if (confirm('Are you sure you want to delete this experience?')) {
-      this.experienceService.deleteExperience(id).subscribe({
-        next: () => this.experiences = this.experiences.filter(e => e.id !== id),
-        error: (err) => console.error('Failed to delete experience:', err)
-      });
-    }
+  deleteExperience(experienceId: number): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '450px',
+      panelClass: 'custom-dialog-container',
+      data: {
+        title: 'Delete Experience',
+        message: 'This will permanently remove this work experience. This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Keep It',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.experienceService.deleteExperience(this.userId, experienceId).subscribe({
+          next: () => {
+            this.experiences = this.experiences.filter(e => e.id !== experienceId);
+            this.snackBar.open('Experience deleted successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (err) => {
+            console.error('Failed to delete experience:', err);
+            this.snackBar.open('Failed to delete experience', 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
   }
 
-  deleteFormation(id: number): void {
-    if (confirm('Are you sure you want to delete this formation?')) {
-      this.formationService.deleteFormation(id).subscribe({
-        next: () => this.formations = this.formations.filter(f => f.id !== id),
-        error: (err) => console.error('Failed to delete formation:', err)
-      });
-    }
+  deleteFormation(formationId: number): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '450px',
+      panelClass: 'custom-dialog-container',
+      data: {
+        title: 'Delete Formation',
+        message: 'This will permanently remove the formation record. This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Keep It',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.formationService.deleteFormation(this.userId, formationId).subscribe({
+          next: () => {
+            this.formations = this.formations.filter(f => f.id !== formationId);
+            this.snackBar.open('Formation deleted successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (err) => {
+            console.error('Failed to delete formation:', err);
+            this.snackBar.open('Failed to delete formation', 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
   }
 
   deleteLanguage(id: number): void {

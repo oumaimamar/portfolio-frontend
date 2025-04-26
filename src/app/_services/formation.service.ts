@@ -37,9 +37,13 @@ export class FormationService {
     );
   }
 
-  deleteFormation(formationId: number): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}/formations/${formationId}`
+
+  deleteFormation(profileId: number, formationId: number): Observable<void> {
+    if (!formationId) {
+      throw new Error('Formation ID is required');
+    }
+    return this.http.delete<void>(`${this.apiUrl}/${profileId}/formations/${formationId}`
     );
   }
+
 }
