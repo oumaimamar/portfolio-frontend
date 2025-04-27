@@ -1,19 +1,18 @@
-// project-media-request.model.ts
-export interface ProjectMediaRequest {
-  mediaUrl: string;
-  mediaType: string;  // e.g., 'IMAGE', 'VIDEO', 'DOCUMENT'
-  caption?: string;
-  isFeatured?: boolean;
+export interface ProjectMedia {
+  id: number;
+  projectId: number;
+  fileName: string;
+  filePath: string;
+  fileType: string;
+  fileSize: number;
+  mediaType: MediaType;
+  uploadDate: Date;
 }
 
-// project-media-response.model.ts
-export interface ProjectMediaResponse {
-  id: number;
-  mediaUrl: string;
-  mediaType: string;
-  caption?: string;
-  isFeatured: boolean;
-  projectId: number;
-  createdAt: string;
-  updatedAt: string;
+export enum MediaType {
+  IMAGE = 'IMAGE',
+  DOCUMENT = 'DOCUMENT',
+  VIDEO = 'VIDEO',
+  PRESENTATION = 'PRESENTATION',
+  CODE = 'CODE'
 }

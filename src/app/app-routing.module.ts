@@ -7,6 +7,7 @@ import {CertificationsComponent} from './features/certifications/certifications.
 import {DashboardComponent} from './features/dashboard/dashboard.component';
 import {ProfileWizardComponent} from './features/profile-wizard/profile-wizard.component';
 import {ProjectsComponent} from './features/projects/projects.component';
+import {ProjectMediaComponent} from './features/project-media/project-media.component';
 
 const routes: Routes = [
 
@@ -21,6 +22,10 @@ const routes: Routes = [
 
 
   { path: 'profile-wizard', component: ProfileWizardComponent },
+  { path: 'projects/:projectId/media', component: ProjectMediaComponent },
+  { path: 'projects/media', component: ProjectMediaComponent },
+
+
 
 
   // {

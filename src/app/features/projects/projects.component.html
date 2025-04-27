@@ -62,8 +62,9 @@
             <mat-hint>Press Enter to add each skill</mat-hint>
           </mat-form-field>
 
-          <div class="skills-list" *ngIf="projectForm.get('skills')?.value?.length">
-            <div class="skill-item" *ngFor="let skill of projectForm.get('skills')?.value">
+<!--          <div class="skills-list" *ngIf="projectForm.get('skills')?.value?.length">-->
+          <div class="skills-list" *ngIf="(projectForm.get('skills')?.value ?? []).length > 0">
+          <div class="skill-item" *ngFor="let skill of projectForm.get('skills')?.value">
               {{ skill }}
               <button mat-icon-button (click)="removeSkill(skill)">
                 <mat-icon>close</mat-icon>
@@ -106,6 +107,13 @@
             <button mat-icon-button (click)="deleteProject(project.id)">
               <mat-icon color="warn">delete</mat-icon>
             </button>
+
+
+              <!-- Inside your mat-card-header, after the edit/delete buttons -->
+              <button mat-icon-button (click)="navigateToMediaManagement(project.id)">
+                  <mat-icon>attach_file</mat-icon>
+              </button>
+
           </mat-card-header>
 
           <mat-card-content>

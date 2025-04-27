@@ -42,6 +42,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { ProjectsComponent } from './features/projects/projects.component';
+import { ProjectMediaComponent } from './features/project-media/project-media.component';
+import { ProjectMediaUploadComponentComponent } from './features/project-media-upload-component/project-media-upload-component.component';
+import { FileSizePipe } from './shared/pipes/file-size.pipe';
 
 
 
@@ -60,6 +63,9 @@ import { ProjectsComponent } from './features/projects/projects.component';
     PortfolioComponent,
     ConfirmationDialogComponent,
     ProjectsComponent,
+    ProjectMediaComponent,
+    ProjectMediaUploadComponentComponent,
+    FileSizePipe,
 
   ],
   imports: [

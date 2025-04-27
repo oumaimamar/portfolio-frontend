@@ -6,6 +6,7 @@ import {ProjectService} from '../../_services/project.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-projects',
@@ -23,10 +24,11 @@ export class ProjectsComponent implements OnInit {
   projectForm: FormGroup;
 
   constructor(
-    private fb: FormBuilder,
-    private projectService: ProjectService,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog
+      private fb: FormBuilder,
+      private projectService: ProjectService,
+      private snackBar: MatSnackBar,
+      private dialog: MatDialog,
+      private router: Router
   ) {
     this.projectForm = this.fb.group({
       title: ['', Validators.required],
@@ -54,8 +56,8 @@ export class ProjectsComponent implements OnInit {
     if (this.projectForm.valid) {
       const request: ProjectRequest = this.projectForm.value;
       const operation = this.isEditing
-        ? this.projectService.updateProject(this.currentProjectId!, request)
-        : this.projectService.createProject(1, request); // Replace with profile ID
+          ? this.projectService.updateProject(this.currentProjectId!, request)
+          : this.projectService.createProject(1, request); // Replace with profile ID
 
       operation.subscribe({
         next: (project) => {
@@ -155,5 +157,12 @@ export class ProjectsComponent implements OnInit {
       duration: 5000,
       panelClass: ['error-snackbar']
     });
+  }
+
+
+
+  // Add this method
+  navigateToMediaManagement(projectId: number): void {
+    this.router.navigate(['/projects', projectId, 'media']);
   }
 }
