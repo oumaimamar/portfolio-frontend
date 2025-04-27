@@ -45,6 +45,8 @@ import { ProjectsComponent } from './features/projects/projects.component';
 import { ProjectMediaComponent } from './features/project-media/project-media.component';
 import { ProjectMediaUploadComponentComponent } from './features/project-media-upload-component/project-media-upload-component.component';
 import { FileSizePipe } from './shared/pipes/file-size.pipe';
+import { UserMediaComponent } from './features/user-media/user-media.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 
 
@@ -66,6 +68,9 @@ import { FileSizePipe } from './shared/pipes/file-size.pipe';
     ProjectMediaComponent,
     ProjectMediaUploadComponentComponent,
     FileSizePipe,
+    UserMediaComponent,
+
+
 
   ],
   imports: [
@@ -114,9 +119,11 @@ import { FileSizePipe } from './shared/pipes/file-size.pipe';
     MatSelectModule,
     MatOptionModule,
     MatInputModule,
+
+    MatButtonToggleModule
   ],
   providers: [
-    provideClientHydration(withEventReplay())
+    provideClientHydration(withEventReplay()),
   ],
   bootstrap: [AppComponent]
 })

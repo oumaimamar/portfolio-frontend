@@ -8,12 +8,16 @@ import {DashboardComponent} from './features/dashboard/dashboard.component';
 import {ProfileWizardComponent} from './features/profile-wizard/profile-wizard.component';
 import {ProjectsComponent} from './features/projects/projects.component';
 import {ProjectMediaComponent} from './features/project-media/project-media.component';
+import {UserMediaService} from './_services/user-media.service';
+import {UserMediaComponent} from './features/user-media/user-media.component';
+import {
+  ProjectMediaUploadComponentComponent
+} from './features/project-media-upload-component/project-media-upload-component.component';
 
 const routes: Routes = [
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'profile', component: ProfileComponent },
   { path: 'projects', component: ProjectsComponent },
   { path: 'dashboard', component: DashboardComponent },
 
@@ -25,6 +29,14 @@ const routes: Routes = [
   { path: 'projects/:projectId/media', component: ProjectMediaComponent },
   { path: 'projects/media', component: ProjectMediaComponent },
 
+  // { path: 'userMedia', component: UserMediaComponent },
+
+
+
+//route Test
+  { path: 'media', component: UserMediaComponent },
+  { path: 'media/upload', component: ProjectMediaUploadComponentComponent },
+  { path: 'media/:id', component: ProfileComponent },
 
 
 

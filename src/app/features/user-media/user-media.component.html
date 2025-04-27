@@ -1,0 +1,93 @@
+<!-- Step 5: Technical Skills -->
+<div class="step-content">
+  <h3>Document media</h3>
+
+  <div class="section-header">
+    <h4>Add New Document-Media</h4>
+  </div>
+
+  <form [formGroup]="usermediaForm">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Skill Name</mat-label>
+        <input matInput formControlName="name" required>
+        <mat-error *ngIf="usermediaForm.get('name')?.hasError('required')">
+          Skill name is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category" required>
+          <mat-option *ngFor="let category of skillCategories" [value]="category">
+            {{category}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="usermediaForm.get('category')?.hasError('required')">
+          Category is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Skill Level</mat-label>
+        <mat-select formControlName="level" required>
+          <mat-option *ngFor="let level of skillLevels" [value]="level">
+            {{level | titlecase}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="usermediaForm.get('level')?.hasError('required')">
+          Level is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Years of Experience</mat-label>
+        <input matInput type="number" formControlName="yearsOfExperience" min="0" max="50" required>
+        <mat-error *ngIf="usermediaForm.get('yearsOfExperience')?.hasError('required')">
+          Years of experience is required
+        </mat-error>
+        <mat-error *ngIf="usermediaForm.get('yearsOfExperience')?.hasError('min') ||
+                         usermediaForm.get('yearsOfExperience')?.hasError('max')">
+          Must be between 0 and 50 years
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-checkbox formControlName="verified">Verified Skill</mat-checkbox>
+
+    <div class="button-row">
+      <button mat-raised-button color="primary" (click)="addUserMedia()" [disabled]="!usermediaForm.valid">
+        <mat-icon>add</mat-icon>
+        Add Skill
+      </button>
+    </div>
+  </form>
+
+  <!-- List of existing technical skills -->
+  <div class="section-header" *ngIf="usermedias.length > 0">
+    <h4>Your Technical Skills</h4>
+  </div>
+
+  <div class="skills-grid">
+    <mat-card *ngFor="let skill of usermedias" class="skill-card">
+      <mat-card-header>
+        <mat-card-title>{{skill.name}}</mat-card-title>
+        <mat-card-subtitle>{{skill.category}}</mat-card-subtitle>
+        <span class="spacer"></span>
+        <mat-icon *ngIf="skill.verified" color="primary" matTooltip="Verified">verified</mat-icon>
+        <button mat-icon-button (click)="deleteUserMedia(skill.id)">
+          <mat-icon color="warn">delete</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="skill-details">
+          <div><strong>Level:</strong> {{skill.level | titlecase}}</div>
+          <div><strong>Experience:</strong> {{skill.yearsOfExperience}} year(s)</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
