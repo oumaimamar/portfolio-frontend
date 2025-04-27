@@ -9,7 +9,6 @@ import { HeaderComponent } from './core/layout/header/header.component';
 import { FooterComponent } from './core/layout/footer/footer.component';
 import { SidebarComponent } from './core/layout/sidebar/sidebar.component';
 import { ProfileComponent } from './features/profile/profile.component';
-import { ProjectsComponent } from './features/projects/projects.component';
 import { CertificationsComponent } from './features/certifications/certifications.component';
 import {CommonModule} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
@@ -38,7 +37,12 @@ import {MatCheckbox} from '@angular/material/checkbox';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './features/confirmation-dialog/confirmation-dialog.component';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+
 import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatOptionModule } from '@angular/material/core';
+import { ProjectsComponent } from './features/projects/projects.component';
+
 
 
 @NgModule({
@@ -50,12 +54,12 @@ import { MatChipsModule } from '@angular/material/chips';
     FooterComponent,
     SidebarComponent,
     ProfileComponent,
-    ProjectsComponent,
     CertificationsComponent,
     DashboardComponent,
     ProfileWizardComponent,
     PortfolioComponent,
     ConfirmationDialogComponent,
+    ProjectsComponent,
 
   ],
   imports: [
@@ -93,9 +97,17 @@ import { MatChipsModule } from '@angular/material/chips';
     MatAutocompleteTrigger,
     MatAutocomplete,
 
-    MatChipsModule
-
-
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatInputModule,
   ],
   providers: [
     provideClientHydration(withEventReplay())

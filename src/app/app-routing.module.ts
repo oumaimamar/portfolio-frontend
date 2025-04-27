@@ -3,13 +3,10 @@ import { RouterModule, Routes } from '@angular/router';
 import {LoginComponent} from './auth/login/login.component';
 import {RegisterComponent} from './auth/register/register.component';
 import {ProfileComponent} from './features/profile/profile.component';
-import {ProjectsComponent} from './features/projects/projects.component';
 import {CertificationsComponent} from './features/certifications/certifications.component';
 import {DashboardComponent} from './features/dashboard/dashboard.component';
 import {ProfileWizardComponent} from './features/profile-wizard/profile-wizard.component';
-import {PortfolioComponent} from './features/portfolio/portfolio.component';
-import {ProfileCompletionGuard} from './_helpers/profile-completion.guard';
-import {AuthGuard} from './_helpers/auth.guard';
+import {ProjectsComponent} from './features/projects/projects.component';
 
 const routes: Routes = [
 
