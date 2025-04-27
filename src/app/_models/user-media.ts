@@ -1,24 +1,28 @@
-export enum SkillLevel {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
-  EXPERT = 'EXPERT'
+export enum MediaType {
+  IMAGE='IMAGE',
+  DOCUMENT='DOCUMENT',
+  VIDEO='VIDEO',
+  PRESENTATION='PRESENTATION',
+  CODE='CODE'
 }
 
 export interface UserMediaRequest {
   name: string;
-  level: SkillLevel;
+  mediaType: MediaType;
+  filePath :string
+  description:string;
+
   category: string;
-  yearsOfExperience: number;
   verified: boolean;
 }
 
 export interface UserMediaResponse {
   id: number;
   name: string;
-  level: SkillLevel;
+  mediaType: MediaType;
+  filePath :string
+  description:string;
+
   category: string;
-  yearsOfExperience: number;
   verified: boolean;
-  profileId: number;
 }

@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {SkillLevel} from '../../_models/tech-skill';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CertificationType, ProficiencyLevel} from '../../_models/language';
 import {ProfileService} from '../../_services/profile.service';
 
 import {TokenService} from '../../_services/token.service';
@@ -9,7 +7,7 @@ import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
-import {UserMediaRequest, UserMediaResponse} from '../../_models/user-media';
+import {MediaType, UserMediaRequest, UserMediaResponse} from '../../_models/user-media';
 import {UserMediaService} from '../../_services/user-media.service';
 
 
@@ -17,19 +15,14 @@ import {UserMediaService} from '../../_services/user-media.service';
   selector: 'app-user-media',
   standalone: false,
   templateUrl: './user-media.component.html',
-  styleUrl: './user-media.component.scss'
+  styleUrls: ['./user-media.component.scss'] // <-- Fixed here (styleUrls)
 })
 export class UserMediaComponent implements OnInit {
   userId: number;
 
-// Add to component class --SELECTED
-  skillLevels = Object.values(SkillLevel);
-  proficiencyLevels = Object.values(ProficiencyLevel);
-  certificationTypes = Object.values(CertificationType);
+  mediaTypes = Object.values(MediaType);
 
-
-  // Add to your component class --Suggestion
-  skillCategories = [
+  documentCategories = [
     'Certificates',
     'CVs & Resumes',
     'Education Documents',
@@ -37,25 +30,10 @@ export class UserMediaComponent implements OnInit {
     'Work Samples',
     'Other'
   ];
-  softSkillExamples = [
-    'Communication',
-    'Teamwork',
-    'Problem Solving',
-    'Leadership',
-    'Time Management',
-    'Adaptability',
-    'Creativity',
-    'Critical Thinking'
-  ];
 
-
-// Forms
   profileForm!: FormGroup;
   usermediaForm!: FormGroup;
-
-  // Data lists
   usermedias: UserMediaResponse[] = [];
-
 
   constructor(
     private fb: FormBuilder,
@@ -68,7 +46,6 @@ export class UserMediaComponent implements OnInit {
   ) {
     this.userId = this.tokenService.getUser().id;
   }
-
 
   ngOnInit(): void {
     this.initForms();
@@ -84,15 +61,16 @@ export class UserMediaComponent implements OnInit {
       bio: [''],
       profilePicture: ['']
     });
+
     this.usermediaForm = this.fb.group({
       name: ['', Validators.required],
-      level: [SkillLevel.INTERMEDIATE, Validators.required],
+      filePath: ['', Validators.required],
+      description: ['', Validators.required],
       category: ['', Validators.required],
-      yearsOfExperience: [0, [Validators.required, Validators.min(0), Validators.max(50)]],
+      mediaType: [MediaType.DOCUMENT, Validators.required],
       verified: [false]
     });
   }
-
 
   loadExistingData(): void {
     this.profileService.getProfile(this.userId).subscribe(profile => {
@@ -105,10 +83,10 @@ export class UserMediaComponent implements OnInit {
 
   loadUserMedias(): void {
     this.userMediaService.getAllUserMedia(this.userId).subscribe({
-      next: (skills) => this.usermedias = skills,
+      next: (medias) => this.usermedias = medias,
       error: (err) => {
-        console.error('Failed to load tech skills:', err);
-        this.snackBar.open('Failed to load technical skills', 'Close', {
+        console.error('Failed to load documents:', err);
+        this.snackBar.open('Failed to load documents', 'Close', {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -116,26 +94,28 @@ export class UserMediaComponent implements OnInit {
     });
   }
 
-
   addUserMedia(): void {
     if (this.usermediaForm.valid) {
       const request: UserMediaRequest = this.usermediaForm.value;
       this.userMediaService.createUserMedia(this.userId, request).subscribe({
-        next: (newSkill) => {
-          this.usermedias.push(newSkill);
+        next: (newDoc) => {
+          this.usermedias.push(newDoc);
           this.usermediaForm.reset({
-            level: SkillLevel.INTERMEDIATE,
-            yearsOfExperience: 0,
+            name: '',
+            filePath: '',
+            description: '',
+            category: '',
+            mediaType: MediaType.DOCUMENT,
             verified: false
           });
-          this.snackBar.open('Technical skill added successfully', 'Close', {
+          this.snackBar.open('Document added successfully', 'Close', {
             duration: 3000,
             panelClass: ['success-snackbar']
           });
         },
         error: (err) => {
-          console.error('Failed to add tech skill:', err);
-          this.snackBar.open(err.error?.message || 'Failed to add technical skill', 'Close', {
+          console.error('Failed to add document:', err);
+          this.snackBar.open(err.error?.message || 'Failed to add document', 'Close', {
             duration: 5000,
             panelClass: ['error-snackbar']
           });
@@ -144,12 +124,11 @@ export class UserMediaComponent implements OnInit {
     }
   }
 
-
   deleteUserMedia(id: number): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: 'Delete Technical Skill',
-        message: 'Are you sure you want to delete this technical skill?',
+        title: 'Delete Document',
+        message: 'Are you sure you want to delete this document?',
         confirmText: 'Delete',
         cancelText: 'Cancel'
       }
@@ -160,14 +139,14 @@ export class UserMediaComponent implements OnInit {
         this.userMediaService.deleteUserMedia(this.userId, id).subscribe({
           next: () => {
             this.usermedias = this.usermedias.filter(s => s.id !== id);
-            this.snackBar.open('Technical skill deleted successfully', 'Close', {
+            this.snackBar.open('Document deleted successfully', 'Close', {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
           },
           error: (err) => {
-            console.error('Failed to delete tech skill:', err);
-            this.snackBar.open('Failed to delete technical skill', 'Close', {
+            console.error('Failed to delete document:', err);
+            this.snackBar.open('Failed to delete document', 'Close', {
               duration: 5000,
               panelClass: ['error-snackbar']
             });
@@ -178,4 +157,50 @@ export class UserMediaComponent implements OnInit {
   }
 
 
+  editingDocId: number | null = null;
+  editUserMedia(doc: UserMediaResponse): void {
+    this.editingDocId = doc.id;
+    this.usermediaForm.patchValue({
+      name: doc.name,
+      filePath: doc.filePath,
+      description: doc.description,
+      category: doc.category,
+      mediaType: doc.mediaType,
+      verified: doc.verified
+    });
+  }
+
+  updateUserMedia(): void {
+    if (this.usermediaForm.valid && this.editingDocId !== null) {
+      const request: UserMediaRequest = this.usermediaForm.value;
+      this.userMediaService.updateUserMedia(this.userId, this.editingDocId, request).subscribe({
+        next: (updatedDoc) => {
+          const index = this.usermedias.findIndex(d => d.id === updatedDoc.id);
+          if (index !== -1) {
+            this.usermedias[index] = updatedDoc;
+          }
+          this.snackBar.open('Document updated successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          this.usermediaForm.reset({
+            mediaType: MediaType.DOCUMENT,
+            verified: false
+          });
+          this.editingDocId = null;
+        },
+        error: (err) => {
+          console.error('Failed to update document:', err);
+          this.snackBar.open(err.error?.message || 'Failed to update document', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
+  }
+
+
+
 }
+

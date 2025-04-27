@@ -1,113 +1,151 @@
-.user-media-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+.step-content {
+  padding: 2rem;
+  background-color: #f4f6f8;
+  border-radius: 16px;
+  min-height: 100vh;
 
-  h2 {
-    margin-bottom: 20px;
-    color: #333;
+  h3 {
+    margin-bottom: 2rem;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #2e3a59;
   }
 
-  .upload-section {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 30px;
+  .section-header {
+    margin: 2.5rem 0 1.5rem;
 
-    h3 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      color: #555;
-    }
-
-    .upload-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      align-items: center;
-      margin-bottom: 15px;
-
-      mat-form-field {
-        min-width: 200px;
-      }
-    }
-
-    .selected-files {
-      margin: 15px 0;
-
-      ul {
-        list-style: none;
-        padding-left: 10px;
-
-        li {
-          margin: 5px 0;
-          font-size: 14px;
-        }
-      }
-    }
-
-    .upload-progress {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-
-      mat-progress-bar {
-        flex-grow: 1;
-      }
+    h4 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #344767;
     }
   }
 
-  .filter-section {
-    margin-bottom: 20px;
+  form {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2.5rem;
+    transition: box-shadow 0.3s;
 
-    mat-button-toggle-group {
-      margin-bottom: 15px;
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     }
   }
 
-  .media-list-section {
-    h3 {
-      margin-bottom: 15px;
-      color: #555;
-    }
-
-    .no-media {
-      text-align: center;
-      padding: 20px;
-      background-color: #f5f5f5;
-      border-radius: 8px;
-      color: #777;
-    }
-
-    .media-card {
-      margin-bottom: 15px;
-
-      mat-card-header {
-        margin-bottom: 10px;
-
-        mat-card-title {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-      }
-    }
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
   }
-}
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .upload-controls {
-    flex-direction: column;
-    align-items: flex-start !important;
+  .form-field {
+    width: 100%;
 
     mat-form-field {
       width: 100%;
     }
+  }
+
+  mat-checkbox {
+    margin-top: 1rem;
+    color: #5e6d82;
+    font-size: 1rem;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
 
     button {
-      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-transform: capitalize;
+      transition: background-color 0.3s, box-shadow 0.3s;
+
+      mat-icon {
+        font-size: 1.2rem;
+      }
+
+      &:hover {
+        box-shadow: 0 4px 14px rgba(63, 81, 181, 0.3);
+      }
+    }
+  }
+
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+
+    .skill-card {
+      border-radius: 16px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      }
+
+      mat-card-header {
+        background: #e3e7ed;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #d0d7e2;
+
+        mat-card-title {
+          font-size: 1rem;
+          color: #1e293b;
+          font-weight: 600;
+          width: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        mat-card-subtitle {
+          font-size: 0.85rem;
+          color: #64748b;
+          width: 100%;
+        }
+
+        .spacer {
+          flex: 1 1 auto;
+        }
+
+        button {
+          margin-left: auto;
+        }
+      }
+
+      mat-card-content {
+        padding: 1rem;
+        font-size: 0.95rem;
+        color: #475569;
+
+        .skill-details {
+          margin-top: 0.5rem;
+
+          div {
+            margin-bottom: 0.3rem;
+          }
+        }
+      }
     }
   }
 }

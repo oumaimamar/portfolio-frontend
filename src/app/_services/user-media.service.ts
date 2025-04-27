@@ -25,9 +25,9 @@ export class UserMediaService {
   }
 
 
-  updateUserMedia(profileId: number, techSkillId: number, request: UserMediaRequest): Observable<UserMediaResponse> {
+  updateUserMedia(profileId: number, userMediaId: number, request: UserMediaRequest): Observable<UserMediaResponse> {
     return this.http.put<UserMediaResponse>(
-      `${this.apiUrl}/${profileId}/user-media/${techSkillId}`,
+      `${this.apiUrl}/${profileId}/user-media/${userMediaId}`,
       request
     );
   }

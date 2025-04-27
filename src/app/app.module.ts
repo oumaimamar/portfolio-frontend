@@ -27,7 +27,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClientModule, provideHttpClient, withFetch} from '@angular/common/http';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { ProfileWizardComponent } from './features/profile-wizard/profile-wizard.component';
 import {MatProgressBar} from '@angular/material/progress-bar';
@@ -47,6 +47,7 @@ import { ProjectMediaUploadComponentComponent } from './features/project-media-u
 import { FileSizePipe } from './shared/pipes/file-size.pipe';
 import { UserMediaComponent } from './features/user-media/user-media.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
 
 
@@ -124,6 +125,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
   ],
   providers: [
     provideClientHydration(withEventReplay()),
+    provideHttpClient(withFetch()),
+    provideAnimationsAsync(),
   ],
   bootstrap: [AppComponent]
 })
