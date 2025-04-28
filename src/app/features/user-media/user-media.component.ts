@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
-import {HttpEventType} from '@angular/common/http';
+import {HttpEvent, HttpEventType} from '@angular/common/http';
 import {MediaType, UserMedia} from '../../_models/user-media';
 import {UserMediaService} from '../../_services/user-media.service';
 import {TokenService} from '../../_services/token.service';
@@ -53,7 +53,11 @@ export class UserMediaComponent implements OnInit {
       fileType: [''],
       fileSize: [''],
       mediaType: [''],
-      uploadDate: ['']
+      uploadDate: [''],
+      titre :[''],
+      description : [''],
+      category : [''],
+      verified : false,
     });
   }
 
@@ -68,30 +72,55 @@ export class UserMediaComponent implements OnInit {
     this.selectedFiles = Array.from(event.target.files);
   }
 
-  uploadMedia(): void {
+  // New properties for form fields
+  titre = '';
+  description = '';
+  category = '';
+  verified = false;
+
+  // ... existing methods ...
+
+  uploadMedia() {
     if (!this.selectedFiles.length || !this.selectedMediaType) return;
 
     this.isUploading = true;
     this.uploadProgress = 0;
 
+    // Upload each file
     this.selectedFiles.forEach(file => {
-      this.userMediaService.uploadMediaP(this.userId, file, this.selectedMediaType).subscribe({
-        next: (event: any) => {
+      this.userMediaService.uploadMediaP(
+        this.userId,
+        file,
+        this.selectedMediaType,
+        this.titre,
+        this.description,
+        this.category,
+        this.verified
+      ).subscribe(
+        (event: HttpEvent<any>) => {
           if (event.type === HttpEventType.UploadProgress) {
             this.uploadProgress = Math.round(100 * event.loaded / (event.total || 1));
           } else if (event.type === HttpEventType.Response) {
-            this.loadMedia();
-            this.selectedFiles = [];
             this.isUploading = false;
-            this.showSuccess('Media uploaded successfully');
+            this.loadMedia();
+            this.resetForm();
           }
         },
-        error: (err) => {
-          this.showError('Failed to upload media', err);
+        error => {
           this.isUploading = false;
+          console.error('Upload failed:', error);
         }
-      });
+      );
     });
+  }
+
+  resetForm() {
+    this.selectedFiles = [];
+    this.titre = '';
+    this.description = '';
+    this.category = '';
+    this.verified = false;
+    this.uploadProgress = 0;
   }
 
   deleteMedia(mediaId: number): void {

@@ -7,6 +7,12 @@ export interface UserMedia {
   fileSize: number;
   mediaType: MediaType;
   uploadDate: Date;
+
+  // Newly added fields
+  titre: string;
+  description: string;
+  category: string;
+  verified: boolean;
 }
 
 export enum MediaType {

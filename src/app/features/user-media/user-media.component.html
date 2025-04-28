@@ -6,6 +6,25 @@
     <h3>Upload New Document Media</h3>
 
     <div class="upload-controls">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Title</mat-label>
+        <input matInput [(ngModel)]="titre" placeholder="Enter title">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="description" placeholder="Enter description"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <input matInput [(ngModel)]="category" placeholder="Enter category">
+      </mat-form-field>
+
+      <mat-checkbox [(ngModel)]="verified">Verified</mat-checkbox>
+
+
       <mat-form-field appearance="outline">
         <mat-label>Media Type</mat-label>
         <mat-select [(ngModel)]="selectedMediaType">
@@ -53,10 +72,18 @@
       <mat-card-header>
         <mat-card-title>
           <mat-icon>{{ getMediaIcon(media.mediaType) }}</mat-icon>
-          {{ media.fileName }}
+          {{ media.titre || media.fileName }}
         </mat-card-title>
         <mat-card-subtitle>
           {{ media.mediaType }} • {{ media.fileSize | fileSize }} • Uploaded: {{ media.uploadDate | date }}
+          <div *ngIf="media.description">{{ media.description }}</div>
+          <div>Category: {{ media.category }}</div>
+
+          <div>
+            <mat-icon>{{ media.verified ? 'lock' : 'public' }}</mat-icon>
+            {{ media.verified ? 'Private' : 'Public' }}
+          </div>
+
         </mat-card-subtitle>
       </mat-card-header>
 

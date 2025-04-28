@@ -12,10 +12,14 @@ export class UserMediaService {
 
   constructor(private http: HttpClient) { }
 
-  uploadMediaP(profileId: number, file: File, mediaType: MediaType): Observable<HttpEvent<any>> {
+  uploadMediaP(profileId: number, file: File, mediaType: MediaType, titre: string, description: string, category: string, verified: boolean): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('mediaType', mediaType);
+    formData.append('mediaType', mediaType.toString());
+    formData.append('titre', titre);
+    formData.append('description', description);
+    formData.append('category', category);
+    formData.append('verified', verified.toString()); // must be string for FormData
 
     const req = new HttpRequest('POST', `${this.apiUrl}/${profileId}/upload`, formData, {
       reportProgress: true,
@@ -24,6 +28,7 @@ export class UserMediaService {
 
     return this.http.request(req);
   }
+
 
   getProjectMediaP(profileId: number): Observable<UserMedia[]> {
     return this.http.get<UserMedia[]>(`${this.apiUrl}/${profileId}`);
