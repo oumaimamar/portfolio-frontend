@@ -6,6 +6,7 @@ import {
   RouterStateSnapshot
 } from '@angular/router';
 import { TokenService } from '../_services/token.service';
+import {Observable} from 'rxjs';
 
 
 @Injectable({
@@ -21,13 +22,14 @@ export class AuthGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): boolean {
-    // Check if user is authenticated
-    if (this.tokenService.getToken()) {
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    const token = this.tokenService.getToken();
+
+    if (token && !this.tokenService.isTokenExpired(token)) {
       return true;
     }
 
-    // Not logged in - redirect to login page with return URL
+    this.tokenService.signOut();
     this.router.navigate(['/login'], {
       queryParams: { returnUrl: state.url }
     });

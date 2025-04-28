@@ -4,7 +4,7 @@ import {ProjectMediaService} from '../../_services/project-media.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HttpEventType} from '@angular/common/http';
 
 @Component({
@@ -26,7 +26,9 @@ export class ProjectMediaComponent implements OnInit {
     private route: ActivatedRoute,
     private projectMediaService: ProjectMediaService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router, // 👈 added this
+
   ) { }
 
   ngOnInit(): void {
@@ -136,4 +138,11 @@ export class ProjectMediaComponent implements OnInit {
       panelClass: ['error-snackbar']
     });
   }
+
+
+
+  goBack(): void {
+    this.router.navigate(['/projects']);
+  }
+
 }
