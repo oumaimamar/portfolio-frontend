@@ -51,4 +51,20 @@ export class UserMediaService {
   getMediaTypes(): Observable<MediaType[]> {
     return this.http.get<MediaType[]>(`${this.apiUrl}/media-types`);
   }
+
+//-------------------ADD FILTER AND RESEARCH
+
+  getProjectMediaByCategory(profileId: number, category: string): Observable<UserMedia[]> {
+    return this.http.get<UserMedia[]>(`${this.apiUrl}/${profileId}/category/${category}`);
+  }
+
+  getProjectMediaByTypeAndCategory(profileId: number, mediaType: MediaType, category: string): Observable<UserMedia[]> {
+    return this.http.get<UserMedia[]>(`${this.apiUrl}/${profileId}/type/${mediaType}/category/${category}`);
+  }
+
+  searchProjectMedia(profileId: number, title: string): Observable<UserMedia[]> {
+    return this.http.get<UserMedia[]>(`${this.apiUrl}/${profileId}/search`, { params: { title } });
+  }
+
+
 }

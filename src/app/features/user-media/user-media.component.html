@@ -17,10 +17,16 @@
         <textarea matInput [(ngModel)]="description" placeholder="Enter description"></textarea>
       </mat-form-field>
 
+
       <mat-form-field appearance="outline">
         <mat-label>Category</mat-label>
-        <input matInput [(ngModel)]="category" placeholder="Enter category">
+        <mat-select [(ngModel)]="category" placeholder="Select a category">
+          <mat-option *ngFor="let docCategory of docCategories" [value]="docCategory">
+            {{ docCategory }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
+
 
       <mat-checkbox [(ngModel)]="verified">Verified</mat-checkbox>
 
@@ -63,6 +69,56 @@
 
   <div class="media-list-section">
     <h3>Existing Media</h3>
+
+
+
+    <!-- Add this above the media list section -->
+    <div class="filter-section">
+      <h3>Filters</h3>
+
+      <div class="filter-controls">
+        <!-- Search by title -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search by title</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (keyup.enter)="searchByTitle()" placeholder="Enter title">
+          <button mat-icon-button matSuffix (click)="searchByTitle()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <!-- Filter by category -->
+        <mat-form-field appearance="outline">
+          <mat-label>Filter by category</mat-label>
+          <mat-select [(ngModel)]="selectedCategory" (selectionChange)="filterByCategory(selectedCategory)">
+            <mat-option value="">All Categories</mat-option>
+            <mat-option *ngFor="let docCategory of docCategories" [value]="docCategory">
+              {{ docCategory }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Filter by media type -->
+        <mat-form-field appearance="outline">
+          <mat-label>Filter by type</mat-label>
+          <mat-select [(ngModel)]="selectedMediaType" (selectionChange)="applyFilters()">
+            <mat-option value="">All Types</mat-option>
+            <mat-option *ngFor="let type of mediaTypes" [value]="type">
+              {{ type }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-button (click)="resetFilters()" color="primary">
+          <mat-icon>refresh</mat-icon>
+          Reset Filters
+        </button>
+      </div>
+    </div>
+    <!-- End Add this above the media list section -->
+
+
+
+
 
     <div *ngIf="mediaList.length === 0" class="no-media">
       <p>No media files uploaded yet.</p>

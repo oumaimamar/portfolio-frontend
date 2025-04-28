@@ -29,6 +29,23 @@ export class UserMediaComponent implements OnInit {
   userMediaForm!: FormGroup;
   mediaList: UserMedia[] = [];
 
+  // Add to your component class --Suggestion
+  docCategories = [
+    'Project Management',
+    'Software Architecture',
+    'Security',
+    'Machine Learning',
+    'Data Science',
+    'Cloud Computing',
+    'Mobile Development',
+    'Testing & QA',
+    'UI/UX Design',
+    'Networking',
+    'Blockchain',
+    'Other'
+  ];
+
+
 
   constructor(
     private fb: FormBuilder,
@@ -78,7 +95,6 @@ export class UserMediaComponent implements OnInit {
   category = '';
   verified = false;
 
-  // ... existing methods ...
 
   uploadMedia() {
     if (!this.selectedFiles.length || !this.selectedMediaType) return;
@@ -89,14 +105,7 @@ export class UserMediaComponent implements OnInit {
     // Upload each file
     this.selectedFiles.forEach(file => {
       this.userMediaService.uploadMediaP(
-        this.userId,
-        file,
-        this.selectedMediaType,
-        this.titre,
-        this.description,
-        this.category,
-        this.verified
-      ).subscribe(
+        this.userId, file, this.selectedMediaType, this.titre, this.description, this.category, this.verified).subscribe(
         (event: HttpEvent<any>) => {
           if (event.type === HttpEventType.UploadProgress) {
             this.uploadProgress = Math.round(100 * event.loaded / (event.total || 1));
@@ -114,6 +123,8 @@ export class UserMediaComponent implements OnInit {
     });
   }
 
+
+  //Pour Vider les Champs
   resetForm() {
     this.selectedFiles = [];
     this.titre = '';
@@ -188,4 +199,57 @@ export class UserMediaComponent implements OnInit {
       panelClass: ['error-snackbar']
     });
   }
+
+
+  //-----------------ADD FILTER AND RESEARCH
+
+  // In user-media.component.ts
+// Add these new properties
+  selectedCategory: string = '';
+  searchQuery: string = '';
+
+// Add these new methods
+  filterByCategory(category: string): void {
+    this.selectedCategory = category;
+    this.applyFilters();
+  }
+
+  searchByTitle(): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    if (this.searchQuery) {
+      this.userMediaService.searchProjectMedia(this.userId, this.searchQuery).subscribe({
+        next: (media) => this.mediaList = media,
+        error: (err) => this.showError('Failed to search media', err)
+      });
+    } else if (this.selectedMediaType && this.selectedCategory) {
+      this.userMediaService.getProjectMediaByTypeAndCategory(this.userId, this.selectedMediaType, this.selectedCategory).subscribe({
+        next: (media) => this.mediaList = media,
+        error: (err) => this.showError('Failed to filter media', err)
+      });
+    } else if (this.selectedCategory) {
+      this.userMediaService.getProjectMediaByCategory(this.userId, this.selectedCategory).subscribe({
+        next: (media) => this.mediaList = media,
+        error: (err) => this.showError('Failed to filter media', err)
+      });
+    } else if (this.selectedMediaType) {
+      this.userMediaService.getProjectMediaByType(this.userId, this.selectedMediaType).subscribe({
+        next: (media) => this.mediaList = media,
+        error: (err) => this.showError('Failed to filter media', err)
+      });
+    } else {
+      this.loadMedia(); // Reset to all media if no filters
+    }
+  }
+
+// Reset all filters
+  resetFilters(): void {
+    this.selectedCategory = '';
+    this.searchQuery = '';
+    this.loadMedia();
+  }
+
+
 }
