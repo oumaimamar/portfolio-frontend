@@ -1,28 +1,18 @@
-export enum MediaType {
-  IMAGE='IMAGE',
-  DOCUMENT='DOCUMENT',
-  VIDEO='VIDEO',
-  PRESENTATION='PRESENTATION',
-  CODE='CODE'
-}
-
-export interface UserMediaRequest {
-  name: string;
-  mediaType: MediaType;
-  filePath :string
-  description:string;
-
-  category: string;
-  verified: boolean;
-}
-
-export interface UserMediaResponse {
+export interface UserMedia {
   id: number;
-  name: string;
+  profileId: number;
+  fileName: string;
+  filePath: string;
+  fileType: string;
+  fileSize: number;
   mediaType: MediaType;
-  filePath :string
-  description:string;
+  uploadDate: Date;
+}
 
-  category: string;
-  verified: boolean;
+export enum MediaType {
+  IMAGE = 'IMAGE',
+  DOCUMENT = 'DOCUMENT',
+  VIDEO = 'VIDEO',
+  PRESENTATION = 'PRESENTATION',
+  CODE = 'CODE'
 }

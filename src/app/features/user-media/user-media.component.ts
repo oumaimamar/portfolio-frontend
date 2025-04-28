@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ProfileService} from '../../_services/profile.service';
 
-import {TokenService} from '../../_services/token.service';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
-import {MediaType, UserMediaRequest, UserMediaResponse} from '../../_models/user-media';
+import {HttpEventType} from '@angular/common/http';
+import {MediaType, UserMedia} from '../../_models/user-media';
 import {UserMediaService} from '../../_services/user-media.service';
+import {TokenService} from '../../_services/token.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 
 @Component({
@@ -18,117 +18,88 @@ import {UserMediaService} from '../../_services/user-media.service';
   styleUrls: ['./user-media.component.scss'] // <-- Fixed here (styleUrls)
 })
 export class UserMediaComponent implements OnInit {
+  profileId!: number;
   userId: number;
-
   mediaTypes = Object.values(MediaType);
+  selectedFiles: File[] = [];
+  selectedMediaType: MediaType = MediaType.IMAGE;
+  uploadProgress: number = 0;
+  isUploading: boolean = false;
 
-  documentCategories = [
-    'Certificates',
-    'CVs & Resumes',
-    'Education Documents',
-    'Personal Projects',
-    'Work Samples',
-    'Other'
-  ];
+  userMediaForm!: FormGroup;
+  mediaList: UserMedia[] = [];
 
-  profileForm!: FormGroup;
-  usermediaForm!: FormGroup;
-  usermedias: UserMediaResponse[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private profileService: ProfileService,
-    private tokenService: TokenService,
-    private router: Router,
+    private route: ActivatedRoute,
+    private userMediaService: UserMediaService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private userMediaService: UserMediaService
-  ) {
-    this.userId = this.tokenService.getUser().id;
-  }
+    private tokenService: TokenService,
+  ) { this.userId = this.tokenService.getUser().id;}
 
   ngOnInit(): void {
     this.initForms();
-    this.loadExistingData();
+    this.loadMedia();
+
   }
+
 
   initForms(): void {
-    this.profileForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      phoneNumber: [''],
-      diploma: [''],
-      bio: [''],
-      profilePicture: ['']
-    });
-
-    this.usermediaForm = this.fb.group({
-      name: ['', Validators.required],
-      filePath: ['', Validators.required],
-      description: ['', Validators.required],
-      category: ['', Validators.required],
-      mediaType: [MediaType.DOCUMENT, Validators.required],
-      verified: [false]
+    this.userMediaForm = this.fb.group({
+      fileName: ['', Validators.required],
+      filePath: ['',],
+      fileType: [''],
+      fileSize: [''],
+      mediaType: [''],
+      uploadDate: ['']
     });
   }
 
-  loadExistingData(): void {
-    this.profileService.getProfile(this.userId).subscribe(profile => {
-      if (profile) {
-        this.profileForm.patchValue(profile);
-      }
-    });
-    this.loadUserMedias();
-  }
-
-  loadUserMedias(): void {
-    this.userMediaService.getAllUserMedia(this.userId).subscribe({
-      next: (medias) => this.usermedias = medias,
-      error: (err) => {
-        console.error('Failed to load documents:', err);
-        this.snackBar.open('Failed to load documents', 'Close', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
-      }
+  loadMedia(): void {
+    this.userMediaService.getProjectMediaP(this.userId).subscribe({
+      next: (media) => this.mediaList = media,
+      error: (err) => this.showError('Failed to load media', err)
     });
   }
 
-  addUserMedia(): void {
-    if (this.usermediaForm.valid) {
-      const request: UserMediaRequest = this.usermediaForm.value;
-      this.userMediaService.createUserMedia(this.userId, request).subscribe({
-        next: (newDoc) => {
-          this.usermedias.push(newDoc);
-          this.usermediaForm.reset({
-            name: '',
-            filePath: '',
-            description: '',
-            category: '',
-            mediaType: MediaType.DOCUMENT,
-            verified: false
-          });
-          this.snackBar.open('Document added successfully', 'Close', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
+  onFileSelected(event: any): void {
+    this.selectedFiles = Array.from(event.target.files);
+  }
+
+  uploadMedia(): void {
+    if (!this.selectedFiles.length || !this.selectedMediaType) return;
+
+    this.isUploading = true;
+    this.uploadProgress = 0;
+
+    this.selectedFiles.forEach(file => {
+      this.userMediaService.uploadMediaP(this.userId, file, this.selectedMediaType).subscribe({
+        next: (event: any) => {
+          if (event.type === HttpEventType.UploadProgress) {
+            this.uploadProgress = Math.round(100 * event.loaded / (event.total || 1));
+          } else if (event.type === HttpEventType.Response) {
+            this.loadMedia();
+            this.selectedFiles = [];
+            this.isUploading = false;
+            this.showSuccess('Media uploaded successfully');
+          }
         },
         error: (err) => {
-          console.error('Failed to add document:', err);
-          this.snackBar.open(err.error?.message || 'Failed to add document', 'Close', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.showError('Failed to upload media', err);
+          this.isUploading = false;
         }
       });
-    }
+    });
   }
 
-  deleteUserMedia(id: number): void {
+  deleteMedia(mediaId: number): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '450px',
       data: {
-        title: 'Delete Document',
-        message: 'Are you sure you want to delete this document?',
+        title: 'Delete Media',
+        message: 'Are you sure you want to delete this media?',
         confirmText: 'Delete',
         cancelText: 'Cancel'
       }
@@ -136,71 +107,56 @@ export class UserMediaComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.userMediaService.deleteUserMedia(this.userId, id).subscribe({
+        this.userMediaService.deleteMediaP(mediaId).subscribe({
           next: () => {
-            this.usermedias = this.usermedias.filter(s => s.id !== id);
-            this.snackBar.open('Document deleted successfully', 'Close', {
-              duration: 3000,
-              panelClass: ['success-snackbar']
-            });
+            this.mediaList = this.mediaList.filter(m => m.id !== mediaId);
+            this.showSuccess('Media deleted successfully');
           },
-          error: (err) => {
-            console.error('Failed to delete document:', err);
-            this.snackBar.open('Failed to delete document', 'Close', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
-          }
+          error: (err) => this.showError('Failed to delete media', err)
         });
       }
     });
   }
 
-
-  editingDocId: number | null = null;
-  editUserMedia(doc: UserMediaResponse): void {
-    this.editingDocId = doc.id;
-    this.usermediaForm.patchValue({
-      name: doc.name,
-      filePath: doc.filePath,
-      description: doc.description,
-      category: doc.category,
-      mediaType: doc.mediaType,
-      verified: doc.verified
+  downloadMedia(media: UserMedia): void {
+    this.userMediaService.downloadMediaP(media.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = media.fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      },
+      error: (err) => this.showError('Failed to download media', err)
     });
   }
 
-  updateUserMedia(): void {
-    if (this.usermediaForm.valid && this.editingDocId !== null) {
-      const request: UserMediaRequest = this.usermediaForm.value;
-      this.userMediaService.updateUserMedia(this.userId, this.editingDocId, request).subscribe({
-        next: (updatedDoc) => {
-          const index = this.usermedias.findIndex(d => d.id === updatedDoc.id);
-          if (index !== -1) {
-            this.usermedias[index] = updatedDoc;
-          }
-          this.snackBar.open('Document updated successfully', 'Close', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-          this.usermediaForm.reset({
-            mediaType: MediaType.DOCUMENT,
-            verified: false
-          });
-          this.editingDocId = null;
-        },
-        error: (err) => {
-          console.error('Failed to update document:', err);
-          this.snackBar.open(err.error?.message || 'Failed to update document', 'Close', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
-        }
-      });
+  getMediaIcon(mediaType: MediaType): string {
+    switch (mediaType) {
+      case MediaType.IMAGE: return 'image';
+      case MediaType.DOCUMENT: return 'description';
+      case MediaType.VIDEO: return 'videocam';
+      case MediaType.PRESENTATION: return 'slideshow';
+      case MediaType.CODE: return 'code';
+      default: return 'insert_drive_file';
     }
   }
 
+  private showSuccess(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: ['success-snackbar']
+    });
+  }
 
-
+  private showError(message: string, error: any): void {
+    console.error(message, error);
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
+  }
 }
-

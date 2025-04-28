@@ -225,8 +225,6 @@ export class ProfileWizardComponent  implements OnInit {
     this.loadProjects();
   }
 
-
-
   loadFormations(): void {
     this.formationService.getFormations(this.userId).subscribe({
       next: (formations) => {

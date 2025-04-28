@@ -1,40 +1,49 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpEvent, HttpRequest} from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {UserMediaRequest, UserMediaResponse} from '../_models/user-media';
+import {MediaType, UserMedia} from '../_models/user-media';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserMediaService {
-  private apiUrl = 'http://localhost:8080/api/profiles';
+  private apiUrl  = 'http://localhost:8080/api/user-media'; // adapte si besoin
 
   constructor(private http: HttpClient) { }
 
-  createUserMedia(profileId: number, request: UserMediaRequest): Observable<UserMediaResponse> {
-    return this.http.post<UserMediaResponse>(
-      `${this.apiUrl}/${profileId}/user-media`,
-      request
-    );
+  uploadMediaP(profileId: number, file: File, mediaType: MediaType): Observable<HttpEvent<any>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('mediaType', mediaType);
+
+    const req = new HttpRequest('POST', `${this.apiUrl}/${profileId}/upload`, formData, {
+      reportProgress: true,
+      responseType: 'json'
+    });
+
+    return this.http.request(req);
   }
 
-  getAllUserMedia(profileId: number): Observable<UserMediaResponse[]> {
-    return this.http.get<UserMediaResponse[]>(
-      `${this.apiUrl}/${profileId}/user-media`
-    );
+  getProjectMediaP(profileId: number): Observable<UserMedia[]> {
+    return this.http.get<UserMedia[]>(`${this.apiUrl}/${profileId}`);
   }
 
-
-  updateUserMedia(profileId: number, userMediaId: number, request: UserMediaRequest): Observable<UserMediaResponse> {
-    return this.http.put<UserMediaResponse>(
-      `${this.apiUrl}/${profileId}/user-media/${userMediaId}`,
-      request
-    );
+  getProjectMediaByType(profileId: number, mediaType: MediaType): Observable<UserMedia[]> {
+    return this.http.get<UserMedia[]>(`${this.apiUrl}/${profileId}/type/${mediaType}`);
   }
 
-  deleteUserMedia(profileId: number, techSkillId: number): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}/${profileId}/user-media/${techSkillId}`
-    );
+  downloadMediaP(mediaId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/download/${mediaId}`, {
+      responseType: 'blob'
+    });
+  }
+
+  deleteMediaP(mediaId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${mediaId}`);
+  }
+
+  getMediaTypes(): Observable<MediaType[]> {
+    return this.http.get<MediaType[]>(`${this.apiUrl}/media-types`);
   }
 }
