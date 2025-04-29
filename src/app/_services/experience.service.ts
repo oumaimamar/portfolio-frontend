@@ -30,9 +30,9 @@ export class ExperienceService {
     );
   }
 
-  updateExperience(experienceId: number, experience: Partial<Experience>): Observable<Experience> {
+  updateExperience(profileId: number,experienceId: number, experience: Partial<Experience>): Observable<Experience> {
     return this.http.put<Experience>(
-      `${this.apiUrl}/experiences/${experienceId}`,
+      `${this.apiUrl}/${profileId}/experiences/${experienceId}`,
       experience
     );
   }

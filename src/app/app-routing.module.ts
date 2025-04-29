@@ -13,6 +13,7 @@ import {UserMediaComponent} from './features/user-media/user-media.component';
 import {
   ProjectMediaUploadComponentComponent
 } from './features/project-media-upload-component/project-media-upload-component.component';
+import {PortfolioComponent} from './features/portfolio/portfolio.component';
 
 const routes: Routes = [
 
@@ -30,6 +31,8 @@ const routes: Routes = [
   { path: 'projects/media', component: ProjectMediaComponent },
 
   // { path: 'userMedia', component: UserMediaComponent },
+
+  { path: 'portfolio', component: PortfolioComponent },
 
 
 
@@ -51,7 +54,7 @@ const routes: Routes = [
   //   canActivate: [AuthGuard, ProfileCompletionGuard]
   // },
 
-  { path: '', redirectTo: 'portfolio', pathMatch: 'full' }
+  // { path: '', redirectTo: 'portfolio', pathMatch: 'full' }
 
 ];
 

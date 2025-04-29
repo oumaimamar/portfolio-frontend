@@ -10,7 +10,7 @@ import { FooterComponent } from './core/layout/footer/footer.component';
 import { SidebarComponent } from './core/layout/sidebar/sidebar.component';
 import { ProfileComponent } from './features/profile/profile.component';
 import { CertificationsComponent } from './features/certifications/certifications.component';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
@@ -74,55 +74,56 @@ import {provideAnimationsAsync} from '@angular/platform-browser/animations/async
 
 
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
 
 
-    CommonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    ReactiveFormsModule,
-    MatSelectModule,
-    MatToolbarModule,
-    MatIconModule,
+        CommonModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        ReactiveFormsModule,
+        MatSelectModule,
+        MatToolbarModule,
+        MatIconModule,
 
-    MatMenuModule,
-    MatTableModule,
+        MatMenuModule,
+        MatTableModule,
 
-    MatDialogModule,
+        MatDialogModule,
 
-    HttpClientModule,
-    BrowserAnimationsModule,
-    MatTabsModule,
-    MatDividerModule,
-    MatListModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatProgressBar,
-    MatChipListbox,
-    MatChip,
-    MatCheckbox,
-    MatAutocompleteTrigger,
-    MatAutocomplete,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        MatTabsModule,
+        MatDividerModule,
+        MatListModule,
+        MatProgressSpinnerModule,
+        MatSnackBarModule,
+        MatProgressBar,
+        MatChipListbox,
+        MatChip,
+        MatCheckbox,
+        MatAutocompleteTrigger,
+        MatAutocomplete,
 
-    MatChipsModule,
-    MatAutocompleteModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatChipsModule,
-    MatAutocompleteModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatInputModule,
+        MatChipsModule,
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatChipsModule,
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatSelectModule,
+        MatOptionModule,
+        MatInputModule,
 
-    MatButtonToggleModule
-  ],
+        MatButtonToggleModule,
+        NgOptimizedImage
+    ],
   providers: [
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),

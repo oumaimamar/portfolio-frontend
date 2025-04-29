@@ -30,9 +30,9 @@ export class FormationService {
     );
   }
 
-  updateFormation(formationId: number, formation: Formation): Observable<Formation> {
+  updateFormation(profileId: number, formationId: number, formation: Formation): Observable<Formation> {
     return this.http.put<Formation>(
-      `${this.apiUrl}/formations/${formationId}`,
+      `${this.apiUrl}/${profileId}/formations/${formationId}`,
       formation
     );
   }
