@@ -273,3 +273,17 @@
 .certification-list {
   margin-top: 20px;
 }
+
+/*Contact Info */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

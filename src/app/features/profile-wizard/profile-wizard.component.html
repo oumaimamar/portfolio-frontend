@@ -13,7 +13,7 @@
         <h3>Personal Information</h3>
 
         <div class="profile-picture-upload">
-          <img [src]="previewUrl || profileForm.get('profilePicture')?.value || 'assets/default-avatar.png'"
+          <img [src]="getProfilePictureUrl()"
                alt="Profile Picture" class="profile-image">
 
           <input type="file" #fileInput
@@ -50,11 +50,24 @@
           </mat-form-field>
         </div>
 
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field" >
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" required readonly>
+            <mat-error *ngIf="profileForm.get('email')?.hasError('required')">
+              email is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Phone Number</mat-label>
           <input matInput formControlName="phoneNumber" type="tel">
           <mat-icon matSuffix>phone</mat-icon>
         </mat-form-field>
+
+
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Diploma/Degree</mat-label>

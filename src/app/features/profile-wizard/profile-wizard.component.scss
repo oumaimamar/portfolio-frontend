@@ -399,3 +399,7 @@
   }
 }// ----------------------- End-Language-----------
 
+
+::ng-deep .mat-form-field-disabled .mat-form-field-outline {
+  background-color: transparent !important;
+}

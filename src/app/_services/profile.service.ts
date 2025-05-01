@@ -1,13 +1,15 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {ProfileUpdateRequest} from '../_models/profile';
+import { ProfileUpdateRequest } from '../_models/profile';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
-  private apiUrl = 'http://localhost:8080/api/profiles'; // Fixed URL to match your backend
+  private apiBaseUrl = 'http://localhost:8080'; // Base API URL
+  private apiUrl = `${this.apiBaseUrl}/api/profiles`; // Full profiles endpoint
 
   constructor(private http: HttpClient) { }
 
@@ -26,5 +28,24 @@ export class ProfileService {
       reportProgress: true,
       observe: 'events'
     });
+  }
+
+  getFullImageUrl(relativePath: string | null | undefined): string {
+    if (!relativePath) {
+      return 'assets/default-avatar.png';
+    }
+
+    // If already absolute URL
+    if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+      return relativePath;
+    }
+
+    // Handle cases where backend might return full URL or relative path
+    if (relativePath.startsWith(this.apiBaseUrl)) {
+      return relativePath;
+    }
+
+    // For relative paths from backend
+    return `${this.apiBaseUrl}${relativePath.startsWith('/') ? '' : '/'}${relativePath}`;
   }
 }

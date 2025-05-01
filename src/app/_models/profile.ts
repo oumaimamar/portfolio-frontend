@@ -10,16 +10,13 @@ export interface Profile {
   socialLinks?: string[];
   completedSteps?: {
     profile?: boolean;
-    experiences?: boolean;
-    formations?: boolean;
-    languages?: boolean;
-    skills?: boolean;
   };
 }
 
 export interface ProfileUpdateRequest {
   firstName?: string;
   lastName?: string;
+  email?:string;
   phoneNumber?: string;
   diploma?: string;
   profilePicture?: string;

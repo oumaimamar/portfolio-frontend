@@ -14,6 +14,7 @@ export class RegisterComponent implements OnInit {
   isSuccessful = false;
   isSignUpFailed = false;
   errorMessage = '';
+  message = '';
   roles = ['APPRENANT', 'LAUREAT', 'RESPONSABLE', 'RECRUTEUR'];
 
   constructor(
@@ -39,13 +40,16 @@ export class RegisterComponent implements OnInit {
     }
 
     this.authService.register(this.registerForm.value).subscribe({
-      next: data => {
+      next: (res: any) => {
         this.isSuccessful = true;
         this.isSignUpFailed = false;
+        this.message = res.message || 'Registration successful';
+
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
+
       error: err => {
         this.errorMessage = err.error.message;
         this.isSignUpFailed = true;

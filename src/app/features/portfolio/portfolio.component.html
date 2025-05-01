@@ -1,25 +1,40 @@
 <div class="cv-container">
   <!-- Header Section -->
   <header class="cv-header">
+
+
     <div class="profile-photo-container">
-      <img [src]="previewUrl || profileForm.get('profilePicture')?.value || 'assets/default-avatar.png'"
+      <img [src]="getProfilePictureUrl() || 'assets/default-avatar.png'"
            alt="Profile Photo" class="profile-photo">
+
       <input type="file" #fileInput
              (change)="onFileSelected($event)"
              style="display: none;"
              accept="image/jpeg, image/png, image/gif">
+
       <button mat-icon-button (click)="fileInput.click()" class="upload-btn">
         <mat-icon>photo_camera</mat-icon>
       </button>
     </div>
 
+
+
     <div class="header-content">
       <h1>{{profileForm.get('firstName')?.value || 'First'}} {{profileForm.get('lastName')?.value || 'Last'}}</h1>
       <p class="title">{{profileForm.get('diploma')?.value || 'Your Profession'}}</p>
+
       <div class="contact-info">
-        <span *ngIf="profileForm.get('phoneNumber')?.value">
-          <mat-icon>phone</mat-icon> {{profileForm.get('phoneNumber')?.value}}
+
+          <span *ngIf="profileForm.get('email')?.value" class="contact-item">
+            <mat-icon>email</mat-icon>
+            {{ profileForm.get('email')?.value }}
+          </span>
+
+        <span *ngIf="profileForm.get('phoneNumber')?.value" class="contact-item">
+          <mat-icon>phone</mat-icon>
+          {{ profileForm.get('phoneNumber')?.value }}
         </span>
+
       </div>
     </div>
   </header>

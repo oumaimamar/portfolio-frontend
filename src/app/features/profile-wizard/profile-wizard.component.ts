@@ -142,6 +142,7 @@ export class ProfileWizardComponent  implements OnInit {
     this.profileForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
+      email:['', Validators.required],
       phoneNumber: [''],
       diploma: [''],
       bio: [''],
@@ -303,6 +304,29 @@ export class ProfileWizardComponent  implements OnInit {
 
 
   // -----------------Upload Image + Save Profile
+
+// This method should be added to your component
+  getProfilePictureUrl(): string {
+    if (this.previewUrl) {
+      return this.previewUrl as string;
+    }
+
+    const profilePicture = this.profileForm.get('profilePicture')?.value;
+    if (!profilePicture) {
+      return 'assets/default-avatar.png';
+    }
+
+    // If the path already starts with http:// or https://, return it as is
+    if (profilePicture.startsWith('http://') || profilePicture.startsWith('https://')) {
+      return profilePicture;
+    }
+
+    // Otherwise, prepend the base URL
+    return this.profileService.getFullImageUrl(profilePicture);
+  }
+
+
+
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
@@ -318,12 +342,18 @@ export class ProfileWizardComponent  implements OnInit {
 
       // Validate file type and size
       if (!file.type.match(/image\/(jpeg|png|gif)/)) {
-        alert('Only JPEG, PNG, or GIF images are allowed');
+        this.snackBar.open('Only JPEG, PNG, or GIF images are allowed', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        alert('Image size should be less than 5MB');
+        this.snackBar.open('Image size should be less than 5MB', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
         return;
       }
 
@@ -336,18 +366,21 @@ export class ProfileWizardComponent  implements OnInit {
             // Handle successful upload
             this.uploadProgress = null;
 
-            // Assuming backend returns the image path or URL
-            const imagePath = event.body?.path || event.body?.url || event.body?.filename;
+            // Get the profile data from the response
+            const profileData = event.body;
 
-            if (imagePath) {
+            if (profileData && profileData.profilePicture) {
               // Update form with the new image path
-              this.profileForm.patchValue({ profilePicture: imagePath });
+              this.profileForm.patchValue({ profilePicture: profileData.profilePicture });
 
               // Reset preview (will now use the form value)
               this.previewUrl = null;
 
               // Show success message
-              alert('Profile picture updated successfully!');
+              this.snackBar.open('Profile picture updated successfully!', 'Close', {
+                duration: 3000,
+                panelClass: ['success-snackbar']
+              });
             }
           }
         },
@@ -355,11 +388,15 @@ export class ProfileWizardComponent  implements OnInit {
           console.error('Upload error:', err);
           this.uploadProgress = null;
           this.previewUrl = null;
-          alert('Error uploading image. Please try again.');
+          this.snackBar.open('Error uploading image. Please try again.', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         }
       });
     }
   }
+
 
   saveProfile(): void {
     if (this.profileForm.valid) {
@@ -401,6 +438,7 @@ export class ProfileWizardComponent  implements OnInit {
       this.saveProfile();
     });
   }
+
 //-----------------------------------------
 
 
