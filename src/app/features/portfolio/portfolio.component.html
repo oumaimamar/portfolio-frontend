@@ -231,6 +231,114 @@
           </div>
         </div>
       </section>
+
+      <!-- Projects Section -->
+      <section class="cv-section">
+        <h2 class="section-title">
+          <mat-icon>folder</mat-icon> Projects
+          <button mat-icon-button (click)="showProjectForm = true" *ngIf="!showProjectForm" class="add-btn">
+            <mat-icon>add</mat-icon>
+          </button>
+        </h2>
+
+        <!-- Project Form -->
+        <div *ngIf="showProjectForm" class="project-form">
+          <form [formGroup]="projectForm">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Project Title</mat-label>
+                <input matInput formControlName="title" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="status" required>
+                  <mat-option *ngFor="let status of projectStatuses" [value]="status">
+                    {{status | titlecase}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" rows="4" required></textarea>
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Start Date</mat-label>
+                <input matInput formControlName="startDate" type="date">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>End Date</mat-label>
+                <input matInput formControlName="endDate" type="date">
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Technologies</mat-label>
+              <mat-chip-grid #chipGrid>
+                <mat-chip-row *ngFor="let tech of projectForm.get('skills')?.value"
+                              (removed)="removeTech(tech)">
+                  {{tech}}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+                <input placeholder="Add technology..."
+                       [matChipInputFor]="chipGrid"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       [matChipInputAddOnBlur]="true"
+                       (matChipInputTokenEnd)="addTech($event)">
+              </mat-chip-grid>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-button (click)="showProjectForm = false">Cancel</button>
+              <button mat-raised-button color="primary"
+                      (click)="addProject()"
+                      [disabled]="!projectForm.valid">
+                {{editingProject ? 'Update' : 'Add'}} Project
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Project List -->
+        <div class="project-list">
+          <div *ngFor="let project of projects" class="project-item">
+            <div class="project-header">
+              <h3>{{project.title}}</h3>
+              <span class="spacer"></span>
+              <span class="project-status">{{project.status | titlecase}}</span>
+              <button mat-icon-button (click)="editProject(project)" class="edit-btn">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteProject(project.id)" class="delete-btn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <p class="project-dates" *ngIf="project.startDate || project.endDate">
+              {{project.startDate | date:'MMM yyyy'}} -
+              {{project.endDate ? (project.endDate | date:'MMM yyyy') : 'Present'}}
+            </p>
+            <p class="project-description">{{project.description}}</p>
+
+            <div *ngIf="project.skills?.length" class="project-technologies">
+              <mat-chip-listbox>
+                <mat-chip-option *ngFor="let tech of project.skills">
+                  {{tech}}
+                </mat-chip-option>
+              </mat-chip-listbox>
+            </div>
+          </div>
+
+          <div *ngIf="projects.length === 0" class="empty-state">
+            <p>No projects added yet</p>
+          </div>
+        </div>
+      </section>
+
     </div>
 
     <!-- Right Column -->
@@ -280,7 +388,7 @@
                 </mat-form-field>
               </div>
 
-              <mat-checkbox formControlName="verified">Verified Skill</mat-checkbox>
+<!--              <mat-checkbox formControlName="verified">Verified Skill</mat-checkbox>-->
 
               <div class="form-actions">
                 <button mat-button (click)="showTechSkillForm = false">Cancel</button>
@@ -298,7 +406,7 @@
               <div class="skill-header">
                 <span class="skill-name">{{skill.name}}</span>
                 <span class="spacer"></span>
-                <mat-icon *ngIf="skill.verified" color="primary" class="verified-icon">verified</mat-icon>
+<!--                <mat-icon *ngIf="skill.verified" color="primary" class="verified-icon">verified</mat-icon>-->
                 <button mat-icon-button (click)="editTechSkill(skill)" class="edit-btn">
                   <mat-icon>edit</mat-icon>
                 </button>
@@ -558,112 +666,7 @@
         </div>
       </section>
 
-      <!-- Projects Section -->
-      <section class="cv-section">
-        <h2 class="section-title">
-          <mat-icon>folder</mat-icon> Projects
-          <button mat-icon-button (click)="showProjectForm = true" *ngIf="!showProjectForm" class="add-btn">
-            <mat-icon>add</mat-icon>
-          </button>
-        </h2>
 
-        <!-- Project Form -->
-        <div *ngIf="showProjectForm" class="project-form">
-          <form [formGroup]="projectForm">
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Project Title</mat-label>
-                <input matInput formControlName="title" required>
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Status</mat-label>
-                <mat-select formControlName="status" required>
-                  <mat-option *ngFor="let status of projectStatuses" [value]="status">
-                    {{status | titlecase}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Description</mat-label>
-              <textarea matInput formControlName="description" rows="4" required></textarea>
-            </mat-form-field>
-
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Start Date</mat-label>
-                <input matInput formControlName="startDate" type="date">
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>End Date</mat-label>
-                <input matInput formControlName="endDate" type="date">
-              </mat-form-field>
-            </div>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Technologies</mat-label>
-              <mat-chip-grid #chipGrid>
-                <mat-chip-row *ngFor="let tech of projectForm.get('skills')?.value"
-                              (removed)="removeTech(tech)">
-                  {{tech}}
-                  <button matChipRemove>
-                    <mat-icon>cancel</mat-icon>
-                  </button>
-                </mat-chip-row>
-                <input placeholder="Add technology..."
-                       [matChipInputFor]="chipGrid"
-                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                       [matChipInputAddOnBlur]="true"
-                       (matChipInputTokenEnd)="addTech($event)">
-              </mat-chip-grid>
-            </mat-form-field>
-
-            <div class="form-actions">
-              <button mat-button (click)="showProjectForm = false">Cancel</button>
-              <button mat-raised-button color="primary"
-                      (click)="addProject()"
-                      [disabled]="!projectForm.valid">
-                {{editingProject ? 'Update' : 'Add'}} Project
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Project List -->
-        <div class="project-list">
-          <div *ngFor="let project of projects" class="project-item">
-            <div class="project-header">
-              <h3>{{project.title}}</h3>
-              <span class="spacer"></span>
-              <span class="project-status">{{project.status | titlecase}}</span>
-              <button mat-icon-button (click)="editProject(project)" class="edit-btn">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button (click)="deleteProject(project.id)" class="delete-btn">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-            <p class="project-dates" *ngIf="project.startDate || project.endDate">
-              {{project.startDate | date:'MMM yyyy'}} -
-              {{project.endDate ? (project.endDate | date:'MMM yyyy') : 'Present'}}
-            </p>
-            <p class="project-description">{{project.description}}</p>
-
-            <div *ngIf="project.skills?.length" class="project-technologies">
-              <mat-chip-listbox>
-                <mat-chip-option *ngFor="let tech of project.skills">
-                  {{tech}}
-                </mat-chip-option>
-              </mat-chip-listbox>
-            </div>
-          </div>
-
-          <div *ngIf="projects.length === 0" class="empty-state">
-            <p>No projects added yet</p>
-          </div>
-        </div>
-      </section>
     </div>
   </main>
 </div>

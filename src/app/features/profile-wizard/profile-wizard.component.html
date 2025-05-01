@@ -424,7 +424,7 @@
             </mat-form-field>
           </div>
 
-          <mat-checkbox formControlName="verified">Verified Skill</mat-checkbox>
+<!--          <mat-checkbox formControlName="verified">Verified Skill</mat-checkbox>-->
 
           <div class="button-row">
             <button mat-raised-button color="primary" (click)="addTechSkill()" [disabled]="!techSkillForm.valid">
@@ -445,7 +445,7 @@
               <mat-card-title>{{skill.name}}</mat-card-title>
               <mat-card-subtitle>{{skill.category}}</mat-card-subtitle>
               <span class="spacer"></span>
-              <mat-icon *ngIf="skill.verified" color="primary" matTooltip="Verified">verified</mat-icon>
+<!--              <mat-icon *ngIf="skill.verified" color="primary" matTooltip="Verified">verified</mat-icon>-->
               <button mat-icon-button (click)="deleteTechSkill(skill.id)">
                 <mat-icon color="warn">delete</mat-icon>
               </button>
