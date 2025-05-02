@@ -13,8 +13,7 @@
         <h3>Personal Information</h3>
 
         <div class="profile-picture-upload">
-          <img [src]="getProfilePictureUrl()"
-               alt="Profile Picture" class="profile-image">
+          <img [src]="getProfilePictureUrl()" alt="Profile Picture" class="profile-image">
 
           <input type="file" #fileInput
                  (change)="onFileSelected($event)"
@@ -30,7 +29,15 @@
                             mode="determinate"
                             [value]="uploadProgress">
           </mat-progress-bar>
+
+          <div *ngIf="verificationMessage" class="verification-message"
+               [class.success]="verificationResult === 'human'"
+               [class.warning]="verificationResult === 'not-human'">
+            <mat-icon>{{ verificationResult === 'human' ? 'check_circle' : 'warning' }}</mat-icon>
+            {{ verificationMessage }}
+          </div>
         </div>
+
 
         <div class="form-row">
           <mat-form-field appearance="outline" class="form-field">

@@ -327,11 +327,17 @@ export class ProfileWizardComponent  implements OnInit {
 
 
 
+// Add this property to your component class
+  verificationMessage: string | null = null;
+  verificationResult: 'human' | 'not-human' | null = null;
+
+// Modify the onFileSelected method
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
-      // Reset progress
       this.uploadProgress = 0;
+      this.verificationMessage = null;
+      this.verificationResult = null;
 
       // Create preview
       const reader = new FileReader();
@@ -349,7 +355,7 @@ export class ProfileWizardComponent  implements OnInit {
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         this.snackBar.open('Image size should be less than 5MB', 'Close', {
           duration: 5000,
           panelClass: ['error-snackbar']
@@ -360,27 +366,37 @@ export class ProfileWizardComponent  implements OnInit {
       this.profileService.uploadProfilePicture(this.userId, file).subscribe({
         next: (event: any) => {
           if (event.type === HttpEventType.UploadProgress) {
-            // Update progress
             this.uploadProgress = Math.round(100 * event.loaded / event.total);
           } else if (event.type === HttpEventType.Response) {
+            const response = event.body;
+
+            // Handle blocked upload
+            if (response.error) {
+              this.uploadProgress = null;
+              this.previewUrl = null;
+              this.snackBar.open(response.message, 'Close', {
+                duration: 5000,
+                panelClass: ['error-snackbar']
+              });
+              return;
+            }
+
             // Handle successful upload
             this.uploadProgress = null;
 
-            // Get the profile data from the response
-            const profileData = event.body;
+            if (response.verification) {
+              this.verificationMessage = response.verification.message;
+              this.verificationResult = response.verification.isHuman ? 'human' : 'not-human';
 
-            if (profileData && profileData.profilePicture) {
-              // Update form with the new image path
-              this.profileForm.patchValue({ profilePicture: profileData.profilePicture });
-
-              // Reset preview (will now use the form value)
-              this.previewUrl = null;
-
-              // Show success message
-              this.snackBar.open('Profile picture updated successfully!', 'Close', {
-                duration: 3000,
-                panelClass: ['success-snackbar']
+              this.snackBar.open(response.verification.message, 'Close', {
+                duration: 5000,
+                panelClass: [response.verification.isHuman ? 'success-snackbar' : 'warning-snackbar']
               });
+            }
+
+            if (response.profile?.profilePicture) {
+              this.profileForm.patchValue({ profilePicture: response.profile.profilePicture });
+              this.previewUrl = null;
             }
           }
         },
@@ -396,6 +412,7 @@ export class ProfileWizardComponent  implements OnInit {
       });
     }
   }
+
 
 
   saveProfile(): void {

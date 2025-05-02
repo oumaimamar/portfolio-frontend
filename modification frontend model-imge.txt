@@ -1,0 +1,102 @@
+modification frontend model-imge
+
+
+profile-wizard html--------------
+
+
+        <div class="profile-picture-upload">
+          <img [src]="getProfilePictureUrl()"
+               alt="Profile Picture" class="profile-image">
+
+          <input type="file" #fileInput
+                 (change)="onFileSelected($event)"
+                 style="display: none;"
+                 accept="image/jpeg, image/png, image/gif">
+
+          <button mat-button (click)="fileInput.click()">
+            <mat-icon>photo_camera</mat-icon>
+            Upload Photo
+          </button>
+
+          <mat-progress-bar *ngIf="uploadProgress !== null"
+                            mode="determinate"
+                            [value]="uploadProgress">
+          </mat-progress-bar>
+        </div>
+
+profile-wizard scss--------------
+
+
+
+profile-wizard component -----------------
+
+
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      // Reset progress
+      this.uploadProgress = 0;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.previewUrl = reader.result;
+      };
+
+      // Validate file type and size
+      if (!file.type.match(/image\/(jpeg|png|gif)/)) {
+        this.snackBar.open('Only JPEG, PNG, or GIF images are allowed', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        this.snackBar.open('Image size should be less than 5MB', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+        return;
+      }
+
+      this.profileService.uploadProfilePicture(this.userId, file).subscribe({
+        next: (event: any) => {
+          if (event.type === HttpEventType.UploadProgress) {
+            // Update progress
+            this.uploadProgress = Math.round(100 * event.loaded / event.total);
+          } else if (event.type === HttpEventType.Response) {
+            // Handle successful upload
+            this.uploadProgress = null;
+
+            // Get the profile data from the response
+            const profileData = event.body;
+
+            if (profileData && profileData.profilePicture) {
+              // Update form with the new image path
+              this.profileForm.patchValue({ profilePicture: profileData.profilePicture });
+
+              // Reset preview (will now use the form value)
+              this.previewUrl = null;
+
+              // Show success message
+              this.snackBar.open('Profile picture updated successfully!', 'Close', {
+                duration: 3000,
+                panelClass: ['success-snackbar']
+              });
+            }
+          }
+        },
+        error: (err) => {
+          console.error('Upload error:', err);
+          this.uploadProgress = null;
+          this.previewUrl = null;
+          this.snackBar.open('Error uploading image. Please try again.', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
+  }

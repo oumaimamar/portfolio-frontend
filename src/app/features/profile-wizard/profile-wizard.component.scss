@@ -403,3 +403,64 @@
 ::ng-deep .mat-form-field-disabled .mat-form-field-outline {
   background-color: transparent !important;
 }
+
+
+.profile-picture-upload {
+  margin-bottom: 20px;
+  text-align: center;
+
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #eee;
+  }
+
+  button {
+    margin-bottom: 10px;
+  }
+}
+
+.verification-message {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  border-left: 4px solid;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+
+  &.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-color: #2e7d32;
+  }
+
+  &.warning {
+    background-color: #ffebee;
+    color: #c62828;
+    border-color: #c62828;
+  }
+}
+
+/* Add to your global styles.css or styles.scss */
+.success-snackbar {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.warning-snackbar {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background-color: #d32f2f !important;
+  color: white !important;
+}
