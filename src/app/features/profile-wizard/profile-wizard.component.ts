@@ -6,7 +6,7 @@ import {Formation} from '../../_models/formation';
 import {SoftSkillRequest, SoftSkillResponse} from '../../_models/soft-skill';
 import {SkillLevel, TechSkillRequest, TechSkillResponse} from '../../_models/tech-skill';
 import {CertificationRequest, CertificationResponse} from '../../_models/certification';
-import {ProjectRequest, ProjectResponse, ProjectStatus} from '../../_models/project';
+// import {ProjectRequest, ProjectResponse, ProjectStatus} from '../../_models/project';
 import {ProfileService} from '../../_services/profile.service';
 import {ExperienceService} from '../../_services/experience.service';
 import {FormationService} from '../../_services/formation.service';
@@ -14,7 +14,7 @@ import {SoftSkillService} from '../../_services/soft-skill.service';
 import {LanguageService} from '../../_services/language.service';
 import {TechSkillService} from '../../_services/tech-skill.service';
 import {CertificationService} from '../../_services/certification.service';
-import {ProjectService} from '../../_services/project.service';
+// import {ProjectService} from '../../_services/project.service';
 import { Router } from '@angular/router';
 import {ProfileUpdateRequest} from '../../_models/profile';
 import { HttpEventType } from '@angular/common/http';
@@ -35,9 +35,10 @@ export class ProfileWizardComponent  implements OnInit {
   totalSteps = 7;
   userId: number;
 
-// Add these to your component class
+// Add these As Profile Picture
   previewUrl: string | ArrayBuffer | null = null;
   uploadProgress: number | null = null;
+
 
 // Add to component class --SELECTED
   skillLevels = Object.values(SkillLevel);
@@ -100,7 +101,7 @@ export class ProfileWizardComponent  implements OnInit {
   softSkillForm!: FormGroup;
   techSkillForm!: FormGroup;
   certificationForm!: FormGroup;
-  projectForm!: FormGroup;
+  // projectForm!: FormGroup;
 
   // Data lists
   experiences: Experience[] = [];
@@ -109,10 +110,10 @@ export class ProfileWizardComponent  implements OnInit {
   softSkills: SoftSkillResponse[] = [];
   techSkills: TechSkillResponse[] = [];
   certifications: CertificationResponse[] = [];
-  projects: ProjectResponse[] = [];
+  // projects: ProjectResponse[] = [];
 
   // Status options
-  projectStatuses = Object.values(ProjectStatus);
+  // projectStatuses = Object.values(ProjectStatus);
 
   constructor(
     private fb: FormBuilder,
@@ -123,11 +124,11 @@ export class ProfileWizardComponent  implements OnInit {
     private softSkillService: SoftSkillService,
     private techSkillService: TechSkillService,
     private certificationService: CertificationService,
-    private projectService: ProjectService,
+    // private projectService: ProjectService,
     private tokenService: TokenService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     this.userId = this.tokenService.getUser().id;
   }
@@ -198,16 +199,16 @@ export class ProfileWizardComponent  implements OnInit {
       nativeLanguage: [false]
     });
 
-    this.projectForm = this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
-      startDate: [''],
-      endDate: [''],
-      status: [ProjectStatus.PLANNED, Validators.required],
-      technologies: [[]],
-      projectUrl: [''],
-      repositoryUrl: ['']
-    });
+    // this.projectForm = this.fb.group({
+    //   title: ['', Validators.required],
+    //   description: ['', Validators.required],
+    //   startDate: [''],
+    //   endDate: [''],
+    //   status: [ProjectStatus.PLANNED, Validators.required],
+    //   technologies: [[]],
+    //   projectUrl: [''],
+    //   repositoryUrl: ['']
+    // });
   }
 
   loadExistingData(): void {
@@ -223,7 +224,7 @@ export class ProfileWizardComponent  implements OnInit {
     this.loadSoftSkills();
     this.loadTechSkills();
     this.loadCertifications();
-    this.loadProjects();
+    // this.loadProjects();
   }
 
   loadFormations(): void {
@@ -294,12 +295,12 @@ export class ProfileWizardComponent  implements OnInit {
     });
   }
 
-  loadProjects(): void {
-    this.projectService.getAllProjects(this.userId).subscribe({
-      next: (projects) => this.projects = projects,
-      error: (err) => console.error('Failed to load projects:', err)
-    });
-  }
+  // loadProjects(): void {
+  //   this.projectService.getAllProjects(this.userId).subscribe({
+  //     next: (projects) => this.projects = projects,
+  //     error: (err) => console.error('Failed to load projects:', err)
+  //   });
+  // }
 
 
 
@@ -587,18 +588,18 @@ export class ProfileWizardComponent  implements OnInit {
     }
   }
 
-  addProject(): void {
-    if (this.projectForm.valid) {
-      const request: ProjectRequest = this.projectForm.value;
-      this.projectService.createProject(this.userId, request).subscribe({
-        next: (newProject) => {
-          this.projects.push(newProject);
-          this.projectForm.reset();
-        },
-        error: (err) => console.error('Failed to add project:', err)
-      });
-    }
-  }
+  // addProject(): void {
+  //   if (this.projectForm.valid) {
+  //     const request: ProjectRequest = this.projectForm.value;
+  //     this.projectService.createProject(this.userId, request).subscribe({
+  //       next: (newProject) => {
+  //         this.projects.push(newProject);
+  //         this.projectForm.reset();
+  //       },
+  //       error: (err) => console.error('Failed to add project:', err)
+  //     });
+  //   }
+  // }
 
 
   deleteFormation(formationId: number): void {
@@ -805,14 +806,14 @@ export class ProfileWizardComponent  implements OnInit {
   }
 
 
-  deleteProject(id: number): void {
-    if (confirm('Are you sure you want to delete this project?')) {
-      this.projectService.deleteProject(id).subscribe({
-        next: () => this.projects = this.projects.filter(p => p.id !== id),
-        error: (err) => console.error('Failed to delete project:', err)
-      });
-    }
-  }
+  // deleteProject(id: number): void {
+  //   if (confirm('Are you sure you want to delete this project?')) {
+  //     this.projectService.deleteProject(id).subscribe({
+  //       next: () => this.projects = this.projects.filter(p => p.id !== id),
+  //       error: (err) => console.error('Failed to delete project:', err)
+  //     });
+  //   }
+  // }
 
 
 
@@ -848,12 +849,13 @@ export class ProfileWizardComponent  implements OnInit {
   calculateProgress(): number {
     const completed = [
       this.profileForm.valid,
-      this.experiences.length > 0,
       this.formations.length > 0,
-      this.languages.length > 0,
-      this.softSkills.length > 0,
+      this.experiences.length > 0,
+      this.certifications.length > 0,
       this.techSkills.length > 0,
-      this.projects.length > 0
+      this.softSkills.length > 0,
+      this.languages.length > 0,
+      // this.projects.length > 0
     ].filter(Boolean).length;
 
     return (completed / this.totalSteps) * 100;
